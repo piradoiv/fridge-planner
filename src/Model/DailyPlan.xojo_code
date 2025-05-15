@@ -1,7 +1,7 @@
 #tag Class
 Protected Class DailyPlan
 	#tag Property, Flags = &h0
-		Dinner As String
+		Dinner() As Meal
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
@@ -9,7 +9,7 @@ Protected Class DailyPlan
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
-		Lunch As String
+		Lunch() As Meal
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
@@ -68,6 +68,30 @@ Protected Class DailyPlan
 			Group="Behavior"
 			InitialValue=""
 			Type="Integer"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Dinner()"
+			Visible=false
+			Group="Behavior"
+			InitialValue=""
+			Type="String"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Lunch()"
+			Visible=false
+			Group="Behavior"
+			InitialValue=""
+			Type="String"
+			EditorType=""
+		#tag EndViewProperty
+		#tag ViewProperty
+			Name="Notes"
+			Visible=false
+			Group="Behavior"
+			InitialValue=""
+			Type="String"
 			EditorType=""
 		#tag EndViewProperty
 	#tag EndViewBehavior

@@ -7,24 +7,14 @@ Protected Class Meal
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Sub Constructor(name As String, isLunch As Boolean, isDinner As Boolean)
+		Sub Constructor(name As String)
 		  Self.Name = name
-		  Self.IsLunch = isLunch
-		  Self.IsDinner = isDinner
 		End Sub
 	#tag EndMethod
 
 
 	#tag Property, Flags = &h0
 		ID As Integer
-	#tag EndProperty
-
-	#tag Property, Flags = &h0
-		IsDinner As Boolean
-	#tag EndProperty
-
-	#tag Property, Flags = &h0
-		IsLunch As Boolean
 	#tag EndProperty
 
 	#tag Property, Flags = &h0

@@ -295,11 +295,13 @@ End
 		Private Sub DoUpdatePlan()
 		  UpdatePlanTimer.RunMode = Timer.RunModes.Off
 		  
-		  Plan.Lunch = LunchTextField.Text.Trim
-		  Plan.Dinner = DinnerTextField.Text.Trim
+		  Plan.Lunch.RemoveAll
+		  Plan.Lunch.Add(New Meal(LunchTextField.Text.Trim))
+		  Plan.Dinner.RemoveAll
+		  Plan.Dinner.Add(New Meal(DinnerTextField.Text.Trim))
 		  Plan.Notes = NotesTextArea.Text.Trim
 		  
-		  If Plan.ID = 0 And Plan.Lunch = "" And Plan.Dinner = "" And Plan.Notes = "" Then
+		  If Plan.ID = 0 And Plan.Lunch.Count = 0 And Plan.Dinner.Count = 0 And Plan.Notes = "" Then
 		    Return
 		  End If
 		  
@@ -337,8 +339,8 @@ End
 			Set
 			  mPlan = value
 			  Title = value.PlanDate.SQLDate
-			  LunchTextField.Text = value.Lunch
-			  DinnerTextField.Text = value.Dinner
+			  LunchTextField.Text = If(value.Lunch.Count > 0, value.Lunch(0).Name, "")
+			  DinnerTextField.Text = If(value.Dinner.Count > 0, value.Dinner(0).Name, "")
 			  NotesTextArea.Text = value.Notes
 			End Set
 		#tag EndSetter

@@ -33,21 +33,13 @@ Implements iOSMobileTableDataSourceReordering
 
 	#tag Method, Flags = &h0
 		Function GetMealsForDinner() As Meal()
-		  Var result() As Meal
-		  For Each meal As Meal In Meals
-		    If meal.IsDinner Then result.Add(meal)
-		  Next
-		  Return result
+		  Return mDB.GetMealsForDinner
 		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function GetMealsForLunch() As Meal()
-		  Var result() As Meal
-		  For Each meal As Meal In Meals
-		    If meal.IsLunch Then result.Add(meal)
-		  Next
-		  Return result
+		  Return mDB.GetMealsForLunch
 		End Function
 	#tag EndMethod
 
@@ -127,7 +119,23 @@ Implements iOSMobileTableDataSourceReordering
 		    plan = New DailyPlan
 		    plan.PlanDate = day
 		  Else
-		    result = table.CreateCell(plan.Lunch + " | " + plan.Dinner, plan.PlanDate.SQLDate + If(plan.Notes.Trim <> "", " " + plan.Notes, ""))
+		    Var lunch() As String
+		    For Each meal As Meal In plan.Lunch
+		      lunch.Add(meal.Name)
+		    Next
+		    Var dinner() As String
+		    For Each meal As Meal In plan.Dinner
+		      dinner.Add(meal.Name)
+		    Next
+		    Var meals() As String
+		    If lunch.Count > 0 Then
+		      meals.Add("Lunch: " + String.FromArray(lunch, ", "))
+		    End If
+		    If dinner.Count > 0 Then
+		      meals.Add("Dinner: " + String.FromArray(dinner, ", "))
+		    End If
+		    
+		    result = table.CreateCell(If(meals.Count > 0, String.FromArray(meals, " | "), "-"), plan.PlanDate.SQLDate + " " + plan.Notes)
 		  End If
 		  
 		  result.Tag = plan
@@ -146,11 +154,6 @@ Implements iOSMobileTableDataSourceReordering
 
 	#tag Method, Flags = &h0
 		Sub SaveMeal(meal As Meal)
-		  For Each m As Meal In Meals
-		    If m.Name = meal.Name And m.IsLunch = meal.IsLunch And m.IsDinner = meal.IsDinner Then
-		      Return // Meal already exists
-		    End If
-		  Next
 		  mDB.InsertMeal(meal)
 		  Meals = mDB.GetAllMeals()
 		End Sub
@@ -158,12 +161,18 @@ Implements iOSMobileTableDataSourceReordering
 
 	#tag Method, Flags = &h0
 		Sub SavePlan(plan As DailyPlan)
-		  If plan.Lunch <> "" Then
-		    SaveMeal(New Meal(plan.Lunch, True, False))
-		  End If
-		  If plan.Dinner <> "" Then
-		    SaveMeal(New Meal(plan.Dinner, False, True))
-		  End If
+		  For Each lunch As Meal In plan.Lunch
+		    If lunch.ID = 0 Then
+		      SaveMeal(lunch)
+		    End If
+		  Next
+		  
+		  For Each dinner As Meal In plan.Dinner
+		    If dinner.ID = 0 Then
+		      SaveMeal(dinner)
+		    End If
+		  Next
+		  
 		  If plan.ID = 0 Then
 		    mDB.InsertPlan(plan)
 		  Else
@@ -197,15 +206,16 @@ Implements iOSMobileTableDataSourceReordering
 		  Next
 		  If plan1 = Nil Or plan2 = Nil Then Return
 		  
-		  If isLunch Then
-		    Var temp As String = plan1.Lunch
-		    plan1.Lunch = plan2.Lunch
-		    plan2.Lunch = temp
-		  Else
-		    Var temp As String = plan1.Dinner
-		    plan1.Dinner = plan2.Dinner
-		    plan2.Dinner = temp
-		  End If
+		  Break
+		  // If isLunch Then
+		  // Var temp As String = plan1.Lunch
+		  // plan1.Lunch = plan2.Lunch
+		  // plan2.Lunch = temp
+		  // Else
+		  // Var temp As String = plan1.Dinner
+		  // plan1.Dinner = plan2.Dinner
+		  // plan2.Dinner = temp
+		  // End If
 		  SavePlan(plan1)
 		  SavePlan(plan2)
 		End Sub
