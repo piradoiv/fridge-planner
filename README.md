@@ -13,6 +13,15 @@
 - **Meal Swapping**: Drag-and-drop to swap lunch or dinner between days (e.g., swap Monday’s lunch with Wednesday’s lunch).
 - **Notes**: Add optional notes per day (e.g., “Prep lasagna night before”).
 
+## Some Screenshots
+![screenshot-1](https://github.com/user-attachments/assets/528c886c-d469-4a66-b308-fe0235e0e58d)    
+![screenshot-2](https://github.com/user-attachments/assets/69befb13-1447-48a5-813c-77d3773a3f7d)    
+![screenshot-3](https://github.com/user-attachments/assets/a45555e1-41c7-4865-b93c-f528e611698d)    
+![screenshot-4](https://github.com/user-attachments/assets/2c36a70b-2718-4f2c-a780-262c02f7f13c)
+
+## Calendar printed directly from the app
+![printed-calendar](https://github.com/user-attachments/assets/d9c725c9-b14e-40e3-811e-23770db001f3)
+
 ## Requirements
 - **Xojo**: Version 2025r2 or later (with iOS support).
 
