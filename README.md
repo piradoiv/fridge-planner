@@ -12,6 +12,7 @@
 - **Duplicate Previous Month**: Copy the prior month’s plan to quickly start planning.
 - **Meal Swapping**: Drag-and-drop to swap lunch or dinner between days (e.g., swap Monday’s lunch with Wednesday’s lunch).
 - **Notes**: Add optional notes per day (e.g., “Prep lasagna night before”).
+- Check the [Issues](https://github.com/piradoiv/fridge-planner/issues) section for more, feel free to create some feature requests!
 
 ## Some Screenshots
 ![screenshot-1](https://github.com/user-attachments/assets/528c886c-d469-4a66-b308-fe0235e0e58d)    
