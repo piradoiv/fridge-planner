@@ -48,7 +48,7 @@ Contributions to FridgePlanner are welcomed! To contribute:
 5. Open a pull request with a description of your changes.
 
 Please follow these guidelines:
-- Use [Xojo coding conventions](https://documentation.xojo.com/topics/code_management/coding_guidelines.html)).
+- Use [Xojo coding conventions](https://documentation.xojo.com/topics/code_management/coding_guidelines.html).
 - Test changes in the iOS Simulator or on a device.
 - Update documentation for new features.
 - Focus on simplicity and offline functionality.
