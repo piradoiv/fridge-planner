@@ -12,7 +12,7 @@ Begin MobileScreen AddMealScreen Implements iOSMobileTableDataSource
    TabBarVisible   =   True
    TabIcon         =   0
    TintColor       =   &c000000
-   Title           =   "Untitled"
+   Title           =   "Add meal"
    Top             =   0
    Begin MobileLabel MealNameLabel
       AccessibilityHint=   ""
