@@ -72,7 +72,14 @@ Protected Class MealPlanManager
 
 	#tag Method, Flags = &h0
 		Function GetPlanForDate(date As DateTime) As DailyPlan
-		  Var plans() As DailyPlan = mDB.GetPlansForMonth(date.Year, date.Month)
+		  Static plansDate As String = ""
+		  Static plans() As DailyPlan
+		  
+		  If plansDate <> date.ToString("YYYY-MM") Then
+		    plansDate = date.ToString("YYYY-MM")
+		    plans = mDB.GetPlansForMonth(date.Year, date.Month)
+		  End If
+		  
 		  For Each plan As DailyPlan In plans
 		    If plan.PlanDate.SQLDate = date.SQLDate Then
 		      Return plan

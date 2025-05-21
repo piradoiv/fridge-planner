@@ -14,33 +14,6 @@ Begin MobileScreen MainScreen Implements iOSMobileTableDataSourceReordering
    TintColor       =   &c000000
    Title           =   "Untitled"
    Top             =   0
-   Begin iOSMobileTable PlansTable
-      AccessibilityHint=   ""
-      AccessibilityLabel=   ""
-      AllowRefresh    =   False
-      AllowSearch     =   False
-      AutoLayout      =   PlansTable, 4, GeneratePDFButton, 3, False, +1.00, 4, 1, -30, , True
-      AutoLayout      =   PlansTable, 1, <Parent>, 1, False, +1.00, 4, 1, 0, , True
-      AutoLayout      =   PlansTable, 2, <Parent>, 2, False, +1.00, 4, 1, 0, , True
-      AutoLayout      =   PlansTable, 3, TopLayoutGuide, 4, False, +1.00, 4, 1, 0, , True
-      ControlCount    =   0
-      EditingEnabled  =   False
-      EditingEnabled  =   False
-      Enabled         =   True
-      EstimatedRowHeight=   -1
-      Format          =   0
-      Height          =   393
-      Left            =   0
-      LockedInPosition=   False
-      Scope           =   2
-      SectionCount    =   0
-      TintColor       =   &c000000
-      Top             =   65
-      Visible         =   True
-      Width           =   320
-      _ClosingFired   =   False
-      _OpeningCompleted=   False
-   End
    Begin MobileToolbarButton NextMonthButton
       Caption         =   "Next"
       Enabled         =   True
@@ -65,29 +38,6 @@ Begin MobileScreen MainScreen Implements iOSMobileTableDataSourceReordering
       Type            =   19
       Width           =   22.0
    End
-   Begin MobileButton GeneratePDFButton
-      AccessibilityHint=   ""
-      AccessibilityLabel=   ""
-      AutoLayout      =   GeneratePDFButton, 4, BottomLayoutGuide, 3, False, +1.00, 4, 1, -30, , True
-      AutoLayout      =   GeneratePDFButton, 8, , 0, False, +1.00, 4, 1, 50, , True
-      AutoLayout      =   GeneratePDFButton, 1, <Parent>, 1, False, +1.00, 4, 1, *kStdGapCtlToViewH, , True
-      AutoLayout      =   GeneratePDFButton, 2, <Parent>, 2, False, +1.00, 4, 1, -*kStdGapCtlToViewH, , True
-      Caption         =   "Generate PDF"
-      CaptionColor    =   &c007AFF00
-      ControlCount    =   0
-      Enabled         =   True
-      Height          =   50
-      Left            =   20
-      LockedInPosition=   False
-      Scope           =   2
-      TextFont        =   ""
-      TextSize        =   0
-      TintColor       =   &c000000
-      Top             =   488
-      Visible         =   True
-      Width           =   280
-      _ClosingFired   =   False
-   End
    Begin MobileSharingPanel Share
       Left            =   0
       LockedInPosition=   False
@@ -96,32 +46,136 @@ Begin MobileScreen MainScreen Implements iOSMobileTableDataSourceReordering
       Scope           =   2
       Top             =   0
    End
+   Begin CalendarContainer Calendar
+      AccessibilityHint=   ""
+      AccessibilityLabel=   ""
+      AutoLayout      =   Calendar, 4, DayPlanTable, 3, False, +1.00, 4, 1, 0, , True
+      AutoLayout      =   Calendar, 1, <Parent>, 1, False, +1.00, 4, 1, 0, , True
+      AutoLayout      =   Calendar, 2, <Parent>, 2, False, +1.00, 4, 1, 0, , True
+      AutoLayout      =   Calendar, 3, TopLayoutGuide, 4, False, +1.00, 4, 1, 0, , True
+      ControlCount    =   0
+      Enabled         =   True
+      Height          =   247
+      Left            =   0
+      LockedInPosition=   False
+      Scope           =   2
+      TintColor       =   &c000000
+      Top             =   65
+      Visible         =   True
+      Width           =   320
+   End
+   Begin MobileToolbarButton TodayButton
+      Caption         =   "Today"
+      Enabled         =   True
+      Height          =   22
+      Icon            =   0
+      Left            =   8
+      LockedInPosition=   False
+      Scope           =   2
+      Top             =   534
+      Type            =   1001
+      Width           =   46.0
+   End
+   Begin MobileToolbarButton GeneratePDFButton
+      Caption         =   "Generate PDF"
+      Enabled         =   True
+      Height          =   22
+      Icon            =   0
+      Left            =   63
+      LockedInPosition=   False
+      Scope           =   2
+      Top             =   534
+      Type            =   1001
+      Width           =   97.0
+   End
+   Begin Thread GeneratePDFThread
+      Height          =   32
+      Height          =   32
+      Left            =   120
+      Left            =   120
+      LockedInPosition=   False
+      PanelIndex      =   -1
+      Parent          =   ""
+      Priority        =   5
+      Scope           =   2
+      StackSize       =   0
+      Top             =   120
+      Top             =   120
+      Type            =   0
+      Width           =   32
+      Width           =   32
+   End
+   Begin DayPlanTableContainer DayPlanTable
+      AccessibilityHint=   ""
+      AccessibilityLabel=   ""
+      AutoLayout      =   DayPlanTable, 4, BottomLayoutGuide, 3, False, +1.00, 4, 1, 0, , True
+      AutoLayout      =   DayPlanTable, 8, <Parent>, 8, False, +0.45, 4, 1, 0, , True
+      AutoLayout      =   DayPlanTable, 1, <Parent>, 1, False, +1.00, 4, 1, 0, , True
+      AutoLayout      =   DayPlanTable, 2, <Parent>, 2, False, +1.00, 4, 1, 0, , True
+      ControlCount    =   0
+      Enabled         =   True
+      Height          =   255
+      Left            =   0
+      LockedInPosition=   False
+      Scope           =   2
+      TintColor       =   &c000000
+      Top             =   312
+      Visible         =   True
+      Width           =   320
+   End
 End
 #tag EndMobileScreen
 
 #tag WindowCode
 	#tag Event
 		Sub Opening()
-		  CurrentDate = DateTime.Now
+		  Var now As DateTime = DateTime.Now
+		  CurrentDate = now
 		  CurrentDate = CurrentDate.SubtractInterval(0, 0, CurrentDate.Day - 1)
 		  
+		  Calendar.SelectedDate = now
+		  
 		  LoadPlans
+		  
+		  PreviousMonthButton.Tag = "back"
+		  NextMonthButton.Tag = "forward"
+		  TodayButton.Tag = "today"
+		  GeneratePDFButton.Tag = "pdf"
 		End Sub
 	#tag EndEvent
 
 	#tag Event
 		Sub ToolbarButtonPressed(button As MobileToolbarButton)
-		  Select Case button
-		  Case NextMonthButton
+		  Select Case button.Tag
+		  Case "forward"
 		    CurrentDate = CurrentDate.AddInterval(0, 1)
 		    CurrentDate = CurrentDate.SubtractInterval(0, 0, CurrentDate.Day - 1)
-		  Case PreviousMonthButton
+		    Calendar.SelectedDate = CurrentDate
+		    RegeneratePDF
+		  Case "back"
 		    CurrentDate = CurrentDate.SubtractInterval(0, 0, 1)
 		    CurrentDate = CurrentDate.SubtractInterval(0, 0, CurrentDate.Day - 1)
+		    Calendar.SelectedDate = CurrentDate
+		    RegeneratePDF
+		  Case "pdf"
+		    If mPDFFile = Nil Then
+		      If GeneratePDFThread.ThreadState = Thread.ThreadStates.Running Then
+		        GeneratePDFThread.Stop
+		      End If
+		      mShouldShowPDF = True
+		      GeneratePDFThread.Start
+		    Else
+		      mShouldShowPDF = False
+		      ShowPDF
+		    End If
+		  Case "today"
+		    Var now As DateTime = DateTime.Now
+		    CurrentDate = New DateTime(now.Year, now.Month, 1)
+		    Calendar.SelectedDate = now
+		    LoadPlans
 		  End Select
 		  
 		  LoadPlans
-		  PlansTable.ScrollToRow(0)
 		End Sub
 	#tag EndEvent
 
@@ -135,42 +189,140 @@ End
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
-		Private Sub EditScreenClosingHandler(sender As EditDailyPlanScreen)
-		  App.MealsManager.DoMaintenance
+		Private Function GeneratePDF() As FolderItem
+		  Const outerPadding = 40
+		  Const titleHeight = 30
+		  Const headerHeight = 10
 		  
-		  Var plan As DailyPlan = sender.Plan
-		  If plan = Nil Then
-		    Return
+		  Var pdf As New PDFDocument(PDFDocument.PageSizes.A4)
+		  pdf.Landscape = True
+		  Var g As Graphics = pdf.Graphics
+		  
+		  // Initial calculations
+		  Var firstDay As DateTime = CurrentDate
+		  Var lastDay As DateTime = CurrentDate.AddInterval(0, 1, 0).SubtractInterval(0, 0, 1)
+		  Var firstWeek As Integer = firstDay.WeekOfYear
+		  Var lastWeek As Integer = lastDay.WeekOfYear
+		  
+		  Var dayOfWeek As Integer = firstDay.DayOfWeek - 2
+		  If dayOfWeek < 0 Then
+		    dayOfWeek = dayOfWeek + 7
 		  End If
 		  
-		  CurrentDate = New DateTime(plan.PlanDate.Year, plan.PlanDate.Month, 1)
-		  LoadPlans
-		  PlansTable.ScrollToRow(0)
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h21
-		Private Sub EditScreenToolbarButtonPressedHandler(sender As MobileScreen, button As MobileToolbarButton)
-		  Var editScreen As EditDailyPlanScreen = EditDailyPlanScreen(sender)
-		  Var plan As DailyPlan = editScreen.Plan
-		  If plan = Nil Then
-		    Return
+		  // I want to display the whole week, even if it's the previous or next month
+		  firstDay = firstDay.SubtractInterval(0, 0, dayOfWeek)
+		  dayOfWeek = 0
+		  Var lastDayOfWeek As Integer = lastDay.DayOfWeek - 2
+		  If lastDayOfWeek < 0 Then
+		    lastDayOfWeek = lastDayOfWeek + 7
+		  End If
+		  lastDay = lastDay.AddInterval(0, 0, 6 - lastDayOfWeek)
+		  
+		  // Prepare cell dimensions
+		  Var firstDayOfYear As Integer = firstDay.DayOfYear
+		  Var lastDayOfYear As Integer = lastDay.DayOfYear
+		  If lastDayOfYear < firstDayOfYear Then
+		    lastDayOfYear = lastDayOfYear + 365
+		  End If
+		  Var weekCount As Integer = 1 + (lastDayOfYear - firstDayOfYear) / 7
+		  Var currentWeek As Integer = 0
+		  
+		  Var cellWidth As Double = (pdf.PageWidth - outerPadding * 2) / 7
+		  Var cellHeight As Double = (pdf.PageHeight - outerPadding * 2 - titleHeight - headerHeight) / weekCount
+		  
+		  // Draw title and header
+		  g.Font = New Font("Helvetica Bold", 20)
+		  Var monthName As String = CurrentDate.ToString("MMMM YYYY").Titlecase
+		  Var monthNameWidth As Double = g.TextWidth(monthName)
+		  g.DrawText(monthName, g.Width / 2 - monthNameWidth / 2, titleHeight / 2 + g.Font.Ascent)
+		  
+		  g.Font = New Font("Helvetica Bold", 16)
+		  Var dayNames() As String = Array("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+		  For i As Integer = 0 To dayNames.LastIndex
+		    Var day As String = dayNames(i)
+		    Var dayNameWidth As Double = g.TextWidth(day)
+		    Var x As Double = cellWidth * i + outerPadding + cellWidth / 2 - dayNameWidth / 2
+		    Var y As Double = headerHeight / 2 + outerPadding + titleHeight - g.Font.Ascent / 2
+		    g.DrawText(day, x, y)
+		  Next
+		  
+		  // Draw the cells
+		  Var currentDay As DateTime = New DateTime(firstDay)
+		  While currentDay <= lastDay
+		    Var x As Double = dayOfWeek * cellWidth + outerPadding
+		    Var y As Double = currentWeek * cellHeight + outerPadding + titleHeight + headerHeight
+		    g.DrawingColor = Color.Black
+		    g.DrawRectangle(x, y, cellWidth, cellHeight)
+		    
+		    g.Font = New Font("Helvetica", 12)
+		    g.DrawText(currentDay.Day.ToString, x + 5, y + 5 + g.Font.Ascent)
+		    
+		    // Draw the daily plan
+		    g.Font = New Font("Helvetica", 10)
+		    Var plan As DailyPlan = App.MealsManager.GetPlanForDate(currentDay)
+		    If plan = Nil Then
+		      Continue
+		    End If
+		    
+		    Var lunchMeals() As String
+		    For Each lunch As Meal In plan.Lunch
+		      lunchMeals.Add(lunch.Name)
+		    Next
+		    Var mealsText As String = String.FromArray(lunchMeals, ", ")
+		    g.DrawText(mealsText, x + 5, y + 30, cellWidth - 10, False)
+		    
+		    Var dinnerMeals() As String
+		    For Each dinner As Meal In plan.Dinner
+		      dinnerMeals.Add(dinner.Name)
+		    Next
+		    Var dinnerText As String = String.FromArray(dinnerMeals, ", ")
+		    Var dinnerHeight As Double = g.TextHeight(dinnerText, cellWidth - 10)
+		    g.DrawText(dinnerText, x + 5, y + cellHeight - dinnerHeight, cellWidth - 10, False)
+		    
+		    // Increment day and week, if necessary
+		    currentDay = currentDay.AddInterval(0, 0, 1)
+		    dayOfWeek = dayOfWeek + 1
+		    If dayOfWeek > 6 Then
+		      dayOfWeek = 0
+		      currentWeek = currentWeek + 1
+		    End If
+		  Wend
+		  
+		  // Save the file
+		  Var documents As FolderItem = SpecialFolder.Documents.Child("es.rcruz.mealplanner")
+		  If Not documents.Exists Then
+		    documents.CreateFolder
+		  End If
+		  Var f As FolderItem = documents.Child("export.pdf")
+		  If f.Exists Then
+		    f.Remove
 		  End If
 		  
-		  Select Case button.Type
-		  Case MobileToolbarButton.Types.Rewind
-		    editScreen.Plan = App.MealsManager.GetPreviousDayPlan(plan.PlanDate)
-		  Case MobileToolbarButton.Types.FastForward
-		    editScreen.Plan = App.MealsManager.GetNextDayPlan(plan.PlanDate)
-		  End Select
-		End Sub
+		  pdf.Save(f)
+		  
+		  Return f
+		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
 		Private Sub LoadPlans()
-		  Self.Title = CurrentDate.ToString("YYYY-MM")
+		  Self.Title = CurrentDate.ToString("MMMM YYYY").Titlecase
 		  App.MealsManager.LoadPlansForMonth(CurrentDate.Year, CurrentDate.Month)
-		  PlansTable.ReloadDataSource
+		  
+		  DayPlanTable.Plan = App.MealsManager.GetPlanForDate(Calendar.SelectedDate)
+		  DayPlanTable.Reload
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub RegeneratePDF()
+		  If GeneratePDFThread.ThreadState = Thread.ThreadStates.Running Then
+		    GeneratePDFThread.Stop
+		  End If
+		  
+		  mPDFFile = Nil
+		  mShouldShowPDF = False
+		  GeneratePDFThread.Start
 		End Sub
 	#tag EndMethod
 
@@ -251,9 +403,10 @@ End
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
-		Private Sub UpdatePlanRequestedHandler(sender As EditDailyPlanScreen)
-		  App.MealsManager.SavePlan(sender.Plan)
-		  LoadPlans
+		Private Sub ShowPDF()
+		  Var s As New PDFScreen
+		  s.PDF = mPDFFile
+		  s.Show(Self)
 		End Sub
 	#tag EndMethod
 
@@ -262,143 +415,53 @@ End
 		Private CurrentDate As DateTime
 	#tag EndProperty
 
+	#tag Property, Flags = &h21
+		Private mPDFFile As FolderItem
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private mShouldShowPDF As Boolean
+	#tag EndProperty
+
 
 #tag EndWindowCode
 
-#tag Events PlansTable
+#tag Events Calendar
 	#tag Event
-		Sub Opening()
-		  Me.DataSource = Self
-		End Sub
-	#tag EndEvent
-	#tag Event
-		Sub SelectionChanged(section As Integer, row As Integer)
-		  Var cell As MobileTableCellData = Me.RowCellData(section, row)
-		  Var plan As DailyPlan = DailyPlan(cell.Tag)
-		  plan = App.MealsManager.GetPlanForDate(plan.PlanDate)
-		  cell.Tag = plan
-		  
-		  Var s As New EditDailyPlanScreen
-		  AddHandler s.ToolbarButtonPressed, WeakAddressOf EditScreenToolbarButtonPressedHandler
-		  AddHandler s.UpdatePlanRequested, WeakAddressOf UpdatePlanRequestedHandler
-		  AddHandler s.Closing, WeakAddressOf EditScreenClosingHandler
-		  s.Plan = plan
-		  s.Show(Self)
+		Sub DaySelected(date As DateTime)
+		  CurrentDate = New DateTime(date.Year, date.Month, 1)
+		  LoadPlans
 		End Sub
 	#tag EndEvent
 #tag EndEvents
-#tag Events GeneratePDFButton
+#tag Events GeneratePDFThread
 	#tag Event
-		Sub Pressed()
-		  Const outerPadding = 40
-		  Const titleHeight = 30
-		  Const headerHeight = 10
+		Sub Run()
+		  Var f As FolderItem = GeneratePDF
 		  
-		  Var pdf As New PDFDocument(PDFDocument.PageSizes.A4)
-		  pdf.Landscape = True
-		  Var g As Graphics = pdf.Graphics
+		  Me.AddUserInterfaceUpdate("pdf" : f)
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub UserInterfaceUpdate(data() As Dictionary)
+		  Var lastUpdate As Dictionary = data(data.LastIndex)
 		  
-		  // Initial calculations
-		  Var firstDay As DateTime = CurrentDate
-		  Var lastDay As DateTime = CurrentDate.AddInterval(0, 1, 0).SubtractInterval(0, 0, 1)
-		  Var firstWeek As Integer = firstDay.WeekOfYear
-		  Var lastWeek As Integer = lastDay.WeekOfYear
-		  Var weekCount As Integer = lastWeek - firstWeek + 1
-		  Var currentWeek As Integer = 0
+		  mPDFFile = lastUpdate.Value("pdf")
 		  
-		  Var cellWidth As Double = (pdf.PageWidth - outerPadding * 2) / 7
-		  Var cellHeight As Double = (pdf.PageHeight - outerPadding * 2 - titleHeight - headerHeight) / weekCount
-		  
-		  Var dayOfWeek As Integer = firstDay.DayOfWeek - 2
-		  If dayOfWeek < 0 Then
-		    dayOfWeek = dayOfWeek + 7
+		  If mShouldShowPDF Then
+		    Var s As New PDFScreen
+		    s.PDF = mPDFFile
+		    s.Show(Self)
 		  End If
-		  
-		  // I want to display the whole week, even if it's the previous or next month
-		  firstDay = firstDay.SubtractInterval(0, 0, dayOfWeek)
-		  dayOfWeek = 0
-		  Var lastDayOfWeek As Integer = lastDay.DayOfWeek - 2
-		  If lastDayOfWeek < 0 Then
-		    lastDayOfWeek = lastDayOfWeek + 7
-		  End If
-		  lastDay = lastDay.AddInterval(0, 0, 6 - lastDayOfWeek)
-		  
-		  // Draw title and header
-		  g.Font = New Font("Helvetica Bold", 20)
-		  Var monthName As String = CurrentDate.ToString("MMMM YYYY").Titlecase
-		  Var monthNameWidth As Double = g.TextWidth(monthName)
-		  g.DrawText(monthName, g.Width / 2 - monthNameWidth / 2, titleHeight / 2 + g.Font.Ascent)
-		  
-		  g.Font = New Font("Helvetica Bold", 16)
-		  Var dayNames() As String = Array("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
-		  For i As Integer = 0 To dayNames.LastIndex
-		    Var day As String = dayNames(i)
-		    Var dayNameWidth As Double = g.TextWidth(day)
-		    Var x As Double = cellWidth * i + outerPadding + cellWidth / 2 - dayNameWidth / 2
-		    Var y As Double = headerHeight / 2 + outerPadding + titleHeight - g.Font.Ascent / 2
-		    g.DrawText(day, x, y)
-		  Next
-		  
-		  // Draw the cells
-		  Var currentDay As DateTime = New DateTime(firstDay)
-		  While currentDay <= lastDay
-		    Var x As Double = dayOfWeek * cellWidth + outerPadding
-		    Var y As Double = currentWeek * cellHeight + outerPadding + titleHeight + headerHeight
-		    g.DrawingColor = Color.Black
-		    g.DrawRectangle(x, y, cellWidth, cellHeight)
-		    
-		    g.Font = New Font("Helvetica", 12)
-		    g.DrawText(currentDay.Day.ToString, x + 5, y + 5 + g.Font.Ascent)
-		    
-		    // Draw the daily plan
-		    g.Font = New Font("Helvetica", 10)
-		    Var plan As DailyPlan = App.MealsManager.GetPlanForDate(currentDay)
-		    If plan = Nil Then
-		      Continue
-		    End If
-		    
-		    Var lunchMeals() As String
-		    For Each lunch As Meal In plan.Lunch
-		      lunchMeals.Add(lunch.Name)
-		    Next
-		    Var mealsText As String = String.FromArray(lunchMeals, ", ")
-		    g.DrawText(mealsText, x + 5, y + 30, cellWidth - 10, False)
-		    
-		    Var dinnerMeals() As String
-		    For Each dinner As Meal In plan.Dinner
-		      dinnerMeals.Add(dinner.Name)
-		    Next
-		    Var dinnerText As String = String.FromArray(dinnerMeals, ", ")
-		    Var dinnerHeight As Double = g.TextHeight(dinnerText, cellWidth - 10)
-		    g.DrawText(dinnerText, x + 5, y + cellHeight - dinnerHeight, cellWidth - 10, False)
-		    
-		    // Increment day and week, if necessary
-		    currentDay = currentDay.AddInterval(0, 0, 1)
-		    dayOfWeek = dayOfWeek + 1
-		    If dayOfWeek > 6 Then
-		      dayOfWeek = 0
-		      currentWeek = currentWeek + 1
-		    End If
-		  Wend
-		  
-		  // Save the file
-		  Var documents As FolderItem = SpecialFolder.Documents.Child("es.rcruz.mealplanner")
-		  If Not documents.Exists Then
-		    documents.CreateFolder
-		  End If
-		  Var f As FolderItem = documents.Child("export.pdf")
-		  If f.Exists Then
-		    f.Remove
-		  End If
-		  
-		  pdf.Save(f)
-		  System.DebugLog(CurrentMethodName + " " + f.ShellPath)
-		  
-		  Var s As New PDFScreen
-		  s.PDF = f
-		  s.Show(Self)
-		  
-		  // Share.ShareFile(f, Self, Me)
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events DayPlanTable
+	#tag Event
+		Sub ReloadRequested()
+		  RegeneratePDF
+		  LoadPlans
+		  Calendar.Reload
 		End Sub
 	#tag EndEvent
 #tag EndEvents

@@ -12,7 +12,7 @@ Begin MobileScreen PDFScreen
    TabBarVisible   =   True
    TabIcon         =   0
    TintColor       =   &c000000
-   Title           =   "Untitled"
+   Title           =   "PDF Preview"
    Top             =   0
    Begin MobilePDFViewer Viewer
       AccessibilityHint=   ""
@@ -52,28 +52,35 @@ Begin MobileScreen PDFScreen
       Width           =   22.0
    End
    Begin MobileSharingPanel Share
-      Height          =   32
-      Height          =   32
-      Left            =   80
-      Left            =   80
+      Left            =   0
       LockedInPosition=   False
       PanelIndex      =   -1
       Parent          =   ""
       Scope           =   2
-      Top             =   80
-      Top             =   80
-      Width           =   32
-      Width           =   32
+      Top             =   0
    End
 End
 #tag EndMobileScreen
 
 #tag WindowCode
 	#tag Event
-		Sub ToolbarButtonPressed(button As MobileToolbarButton)
-		  Share.ShareFile(Self.mPDFFile, Self, Nil)
+		Sub Opening()
+		  SharePDF
 		End Sub
 	#tag EndEvent
+
+	#tag Event
+		Sub ToolbarButtonPressed(button As MobileToolbarButton)
+		  SharePDF
+		End Sub
+	#tag EndEvent
+
+
+	#tag Method, Flags = &h21
+		Private Sub SharePDF()
+		  Share.ShareFile(Self.mPDFFile, Self, Nil)
+		End Sub
+	#tag EndMethod
 
 
 	#tag Property, Flags = &h21

@@ -115,6 +115,7 @@ Begin MobileScreen AddMealScreen Implements iOSMobileTableDataSource
       AutoLayout      =   SuggestionsTable, 3, MealNameTextField, 4, False, +1.00, 4, 1, *kStdControlGapV, , True
       ControlCount    =   0
       EditingEnabled  =   False
+      EditingEnabled  =   False
       Enabled         =   True
       EstimatedRowHeight=   -1
       Format          =   0
@@ -212,6 +213,10 @@ End
 		Event AddMeal(mealName As String)
 	#tag EndHook
 
+
+	#tag Property, Flags = &h0
+		IsLunch As Boolean
+	#tag EndProperty
 
 	#tag Property, Flags = &h21
 		#tag Note

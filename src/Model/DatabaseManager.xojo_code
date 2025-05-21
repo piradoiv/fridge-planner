@@ -51,11 +51,31 @@ Protected Class DatabaseManager
 		  "is_dinner INTEGER, " + _
 		  "FOREIGN KEY (plan_id) REFERENCES plans (id), " + _
 		  "FOREIGN KEY (meal_id) REFERENCES meals (id))")
+		  
+		  Var indexes() As String
+		  indexes.Add("CREATE INDEX idx_is_lunch ON meals (is_lunch)")
+		  indexes.Add("CREATE INDEX idx_is_dinner ON meals (is_dinner)")
+		  indexes.Add("CREATE INDEX idx_is_lunch_dinner ON meals (is_lunch, is_dinner)")
+		  indexes.Add("CREATE INDEX idx_name ON meals (name)")
+		  indexes.Add("CREATE INDEX idx_plan_id_meal_id ON plans_meals (plan_id, meal_id)")
+		  
+		  #Pragma BreakOnExceptions False
+		  For Each indexDefinition As String In indexes
+		    Try
+		      DB.ExecuteSQL(indexDefinition)
+		    Catch ex As DatabaseException
+		      // Ignore
+		    End Try
+		  Next
 		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
 		Function GetAllMeals() As Meal()
+		  #If LogQueries
+		    System.DebugLog(CurrentMethodName)
+		  #EndIf
+		  
 		  Var result() As Meal
 		  Var rs As RowSet = DB.SelectSQL("SELECT * FROM meals")
 		  For Each row As DatabaseRow In rs
@@ -73,6 +93,10 @@ Protected Class DatabaseManager
 
 	#tag Method, Flags = &h0
 		Function GetMealsForDinner() As Meal()
+		  #If LogQueries
+		    System.DebugLog(CurrentMethodName)
+		  #EndIf
+		  
 		  Var result() As Meal
 		  Var rs As RowSet = DB.SelectSQL("SELECT * FROM meals WHERE is_dinner = 1")
 		  For Each row As DatabaseRow In rs
@@ -90,6 +114,10 @@ Protected Class DatabaseManager
 
 	#tag Method, Flags = &h0
 		Function GetMealsForLunch() As Meal()
+		  #If LogQueries
+		    System.DebugLog(CurrentMethodName)
+		  #EndIf
+		  
 		  Var result() As Meal
 		  Var rs As RowSet = DB.SelectSQL("SELECT * FROM meals WHERE is_lunch = 1")
 		  For Each row As DatabaseRow In rs
@@ -107,6 +135,10 @@ Protected Class DatabaseManager
 
 	#tag Method, Flags = &h0
 		Function GetPlansForMonth(year As Integer, month As Integer) As DailyPlan()
+		  #If LogQueries
+		    System.DebugLog(CurrentMethodName + " year " + year.ToString + " month " + month.ToString)
+		  #EndIf
+		  
 		  Var result() As DailyPlan
 		  Var startDate As String = year.ToString + "-" + month.ToString(Nil, "00") + "-01"
 		  Var endDate As String = year.ToString + "-" + month.ToString(Nil, "00") + "-31"
@@ -140,6 +172,11 @@ Protected Class DatabaseManager
 	#tag Method, Flags = &h0
 		Sub InsertMeal(meal As Meal)
 		  #Pragma BreakOnExceptions False
+		  
+		  #If LogQueries
+		    System.DebugLog(CurrentMethodName + " meal " + meal.Name)
+		  #EndIf
+		  
 		  If meal.Name.Trim = "" Then
 		    Return
 		  End If
@@ -159,6 +196,10 @@ Protected Class DatabaseManager
 
 	#tag Method, Flags = &h0
 		Sub InsertPlan(plan As DailyPlan)
+		  #If LogQueries
+		    System.DebugLog(CurrentMethodName + " date " + plan.PlanDate.SQLDate)
+		  #EndIf
+		  
 		  Const SQL = "INSERT INTO plans (plan_date, notes) VALUES (?, ?)"
 		  DB.ExecuteSQL(SQL, plan.PlanDate.SQLDate, plan.Notes)
 		  plan.ID = DB.LastRowID
@@ -169,6 +210,10 @@ Protected Class DatabaseManager
 
 	#tag Method, Flags = &h0
 		Sub RemoveOrphanMeals()
+		  #If LogQueries
+		    System.DebugLog(CurrentMethodName)
+		  #EndIf
+		  
 		  Const SQL = "SELECT meals.id " + _
 		  "FROM meals " + _
 		  "LEFT JOIN plans_meals ON meals.id = plans_meals.meal_id " +_
@@ -183,6 +228,10 @@ Protected Class DatabaseManager
 
 	#tag Method, Flags = &h0
 		Sub UpdatePlan(plan As DailyPlan)
+		  #If LogQueries
+		    System.DebugLog(CurrentMethodName + " plan date " + plan.PlanDate.SQLDate)
+		  #EndIf
+		  
 		  Var sql As String = "UPDATE plans SET notes = ? WHERE id = ?"
 		  DB.ExecuteSQL(sql, plan.Notes, plan.ID)
 		  
@@ -192,6 +241,10 @@ Protected Class DatabaseManager
 
 	#tag Method, Flags = &h0
 		Sub UpdatePlanMeals(plan As DailyPlan)
+		  #If LogQueries
+		    System.DebugLog(CurrentMethodName + " plan date " + plan.PlanDate.SQLDate)
+		  #EndIf
+		  
 		  // Remove relationships before adding the new ones
 		  DB.ExecuteSQL("DELETE FROM plans_meals WHERE plan_id = ?", plan.ID)
 		  
@@ -234,6 +287,10 @@ Protected Class DatabaseManager
 	#tag Property, Flags = &h21
 		Private DB As SQLiteDatabase
 	#tag EndProperty
+
+
+	#tag Constant, Name = LogQueries, Type = Boolean, Dynamic = False, Default = \"False", Scope = Private
+	#tag EndConstant
 
 
 	#tag ViewBehavior
