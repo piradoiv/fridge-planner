@@ -16,7 +16,7 @@ Protected Class DatabaseManager
 		  #If DebugBuild
 		    System.DebugLog("DB File: " + DB.DatabaseFile.NativePath)
 		    If DB.DatabaseFile.Exists Then
-		      DB.DatabaseFile.Remove
+		      // DB.DatabaseFile.Remove
 		    End If
 		  #EndIf
 		  
@@ -40,6 +40,8 @@ Protected Class DatabaseManager
 		  
 		  DB.ExecuteSQL("CREATE TABLE IF NOT EXISTS meals (" + _
 		  "id INTEGER PRIMARY KEY AUTOINCREMENT, " + _
+		  "is_lunch INTEGER, " + _
+		  "is_dinner INTEGER, " + _
 		  "name TEXT UNIQUE NOT NULL)")
 		  
 		  DB.ExecuteSQL("CREATE TABLE IF NOT EXISTS plans_meals (" + _
@@ -60,6 +62,8 @@ Protected Class DatabaseManager
 		    Var meal As New Meal
 		    meal.ID = row.Column("id").IntegerValue
 		    meal.Name = row.Column("name").StringValue
+		    meal.IsLunch = row.Column("is_lunch").BooleanValue
+		    meal.IsDinner = row.Column("is_dinner").BooleanValue
 		    result.Add(meal)
 		  Next
 		  
@@ -70,11 +74,13 @@ Protected Class DatabaseManager
 	#tag Method, Flags = &h0
 		Function GetMealsForDinner() As Meal()
 		  Var result() As Meal
-		  Var rs As RowSet = DB.SelectSQL("SELECT meals.* FROM plans_meals JOIN meals ON meals.id = plans_meals.meal_id WHERE is_dinner = 1")
+		  Var rs As RowSet = DB.SelectSQL("SELECT * FROM meals WHERE is_dinner = 1")
 		  For Each row As DatabaseRow In rs
 		    Var meal As New Meal
 		    meal.ID = row.Column("id").IntegerValue
 		    meal.Name = row.Column("name").StringValue
+		    meal.IsLunch = row.Column("is_lunch").BooleanValue
+		    meal.IsDinner = row.Column("is_dinner").BooleanValue
 		    result.Add(meal)
 		  Next
 		  
@@ -85,11 +91,13 @@ Protected Class DatabaseManager
 	#tag Method, Flags = &h0
 		Function GetMealsForLunch() As Meal()
 		  Var result() As Meal
-		  Var rs As RowSet = DB.SelectSQL("SELECT meals.* FROM plans_meals JOIN meals ON meals.id = plans_meals.meal_id WHERE is_lunch = 1")
+		  Var rs As RowSet = DB.SelectSQL("SELECT * FROM meals WHERE is_lunch = 1")
 		  For Each row As DatabaseRow In rs
 		    Var meal As New Meal
 		    meal.ID = row.Column("id").IntegerValue
 		    meal.Name = row.Column("name").StringValue
+		    meal.IsLunch = row.Column("is_lunch").BooleanValue
+		    meal.IsDinner = row.Column("is_dinner").BooleanValue
 		    result.Add(meal)
 		  Next
 		  
@@ -109,16 +117,16 @@ Protected Class DatabaseManager
 		    plan.PlanDate = DateTime.FromString(planRow.Column("plan_date").StringValue)
 		    plan.Notes = planRow.Column("notes").StringValue
 		    
-		    Var mealsRS As RowSet = DB.SelectSQL("SELECT * FROM plans_meals JOIN meals ON meals.id = plans_meals.meal_id WHERE plan_id = ?", plan.ID)
+		    Var mealsRS As RowSet = DB.SelectSQL("SELECT plans_meals.*, meals.name FROM plans_meals JOIN meals ON meals.id = plans_meals.meal_id WHERE plan_id = ? GROUP BY meal_id", plan.ID)
 		    For Each mealRow As DatabaseRow In mealsRS
 		      If mealRow.Column("is_lunch").BooleanValue Then
-		        Var meal As New Meal(mealRow.Column("name").StringValue)
-		        meal.ID = mealRow.Column("id").IntegerValue
+		        Var meal As New Meal(mealRow.Column("name"))
+		        meal.ID = mealRow.Column("meal_id").IntegerValue
 		        plan.Lunch.Add(meal)
 		      End If
 		      If mealRow.Column("is_dinner").BooleanValue Then
-		        Var meal As New Meal(mealRow.Column("name").StringValue)
-		        meal.ID = mealRow.Column("id").IntegerValue
+		        Var meal As New Meal(mealRow.Column("name"))
+		        meal.ID = mealRow.Column("meal_id").IntegerValue
 		        plan.Dinner.Add(meal)
 		      End If
 		    Next
@@ -137,8 +145,8 @@ Protected Class DatabaseManager
 		  End If
 		  
 		  Try
-		    Var sql As String = "INSERT INTO meals (name) VALUES (?)"
-		    DB.ExecuteSQL(SQL, meal.Name)
+		    Var sql As String = "INSERT INTO meals (name, is_lunch, is_dinner) VALUES (?, ?, ?)"
+		    DB.ExecuteSQL(SQL, meal.Name, meal.IsLunch, meal.IsDinner)
 		    meal.ID = DB.LastRowID
 		  Catch ex As DatabaseException
 		    Var rows As RowSet = DB.SelectSQL("SELECT id FROM meals WHERE name = ? LIMIT 1", meal.Name)
@@ -160,6 +168,20 @@ Protected Class DatabaseManager
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub RemoveOrphanMeals()
+		  Const SQL = "SELECT meals.id " + _
+		  "FROM meals " + _
+		  "LEFT JOIN plans_meals ON meals.id = plans_meals.meal_id " +_
+		  "WHERE plans_meals.meal_id IS NULL"
+		  
+		  Var rows As RowSet = DB.SelectSQL(SQL)
+		  For Each row As DatabaseRow In rows
+		    DB.ExecuteSQL("DELETE FROM meals WHERE id = ?", row.Column("id").IntegerValue)
+		  Next
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub UpdatePlan(plan As DailyPlan)
 		  Var sql As String = "UPDATE plans SET notes = ? WHERE id = ?"
 		  DB.ExecuteSQL(sql, plan.Notes, plan.ID)
@@ -173,18 +195,37 @@ Protected Class DatabaseManager
 		  // Remove relationships before adding the new ones
 		  DB.ExecuteSQL("DELETE FROM plans_meals WHERE plan_id = ?", plan.ID)
 		  
+		  Var meals() As Meal
+		  
 		  For Each meal As Meal In plan.Lunch
 		    If meal.ID = 0 Then
 		      InsertMeal(meal)
 		    End If
-		    DB.ExecuteSQL("INSERT INTO plans_meals (plan_id, meal_id, is_lunch) VALUES (?, ?, ?)", plan.ID, meal.ID, 1)
+		    meal.IsLunch = True
+		    meals.Add(meal)
 		  Next
 		  
 		  For Each meal As Meal In plan.Dinner
-		    If meal.ID = 0 Then
-		      InsertMeal(meal)
+		    Var found As Boolean
+		    For i As Integer = 0 To meals.LastIndex
+		      If meals(i).Name = meal.Name Then
+		        meals(i).IsDinner = True
+		        found = True
+		      End If
+		    Next
+		    
+		    If Not found Then
+		      If meal.ID = 0 Then
+		        InsertMeal(meal)
+		      End If
+		      meal.IsDinner = True
+		      meals.Add(meal)
 		    End If
-		    DB.ExecuteSQL("INSERT INTO plans_meals (plan_id, meal_id, is_dinner) VALUES (?, ?, ?)", plan.ID, meal.ID, 1)
+		  Next
+		  
+		  For Each meal As Meal In meals
+		    DB.ExecuteSQL("INSERT INTO plans_meals (plan_id, meal_id, is_lunch, is_dinner) VALUES (?, ?, ?, ?)", plan.ID, meal.ID, meal.IsLunch, meal.IsDinner)
+		    DB.ExecuteSQL("UPDATE meals SET is_lunch = ?, is_dinner = ? WHERE id = ?", meal.IsLunch, meal.IsDinner, meal.ID)
 		  Next
 		End Sub
 	#tag EndMethod

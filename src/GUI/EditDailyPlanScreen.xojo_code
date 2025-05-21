@@ -1,5 +1,5 @@
 #tag MobileScreen
-Begin MobileScreen EditDailyPlanScreen
+Begin MobileScreen EditDailyPlanScreen Implements iOSMobileTableDataSource
    BackButtonCaption=   ""
    Compatibility   =   ""
    ControlCount    =   0
@@ -14,29 +14,6 @@ Begin MobileScreen EditDailyPlanScreen
    TintColor       =   &c000000
    Title           =   "Untitled"
    Top             =   0
-   Begin MobileButton CloseButton
-      AccessibilityHint=   ""
-      AccessibilityLabel=   ""
-      AutoLayout      =   CloseButton, 9, <Parent>, 9, False, +1.00, 4, 1, 0, , True
-      AutoLayout      =   CloseButton, 7, , 0, False, +1.00, 4, 1, 100, , True
-      AutoLayout      =   CloseButton, 4, <Parent>, 4, False, +1.00, 4, 1, -*kStdGapCtlToViewV, , True
-      AutoLayout      =   CloseButton, 8, , 0, False, +1.00, 4, 1, 30, , True
-      Caption         =   "Done"
-      CaptionColor    =   &c007AFF00
-      ControlCount    =   0
-      Enabled         =   True
-      Height          =   30
-      Left            =   110
-      LockedInPosition=   False
-      Scope           =   2
-      TextFont        =   ""
-      TextSize        =   0
-      TintColor       =   &c000000
-      Top             =   518
-      Visible         =   True
-      Width           =   100
-      _ClosingFired   =   False
-   End
    Begin MobileToolbarButton PreviousButton
       Caption         =   "Untitled"
       Enabled         =   True
@@ -61,245 +38,55 @@ Begin MobileScreen EditDailyPlanScreen
       Type            =   20
       Width           =   22.0
    End
-   Begin MobileLabel LunchLabel
-      AccessibilityHint=   ""
-      AccessibilityLabel=   ""
-      Alignment       =   0
-      AutoLayout      =   LunchLabel, 8, , 0, False, +1.00, 4, 1, 30, , True
-      AutoLayout      =   LunchLabel, 1, <Parent>, 1, False, +1.00, 4, 1, *kStdGapCtlToViewH, , True
-      AutoLayout      =   LunchLabel, 2, <Parent>, 2, False, +1.00, 4, 1, -*kStdGapCtlToViewH, , True
-      AutoLayout      =   LunchLabel, 3, TopLayoutGuide, 4, False, +1.00, 4, 1, *kStdControlGapV, , True
-      ControlCount    =   0
-      Enabled         =   True
-      Height          =   30
-      Left            =   20
-      LineBreakMode   =   0
-      LockedInPosition=   False
-      MaximumCharactersAllowed=   0
-      Scope           =   2
-      SelectedText    =   ""
-      SelectionLength =   0
-      SelectionStart  =   0
-      Text            =   "Lunch"
-      TextColor       =   &c000000
-      TextFont        =   "System Bold		"
-      TextSize        =   0
-      TintColor       =   &c000000
-      Top             =   73
-      Visible         =   True
-      Width           =   280
-      _ClosingFired   =   False
-   End
-   Begin MobileTextField LunchTextField
-      AccessibilityHint=   ""
-      AccessibilityLabel=   ""
-      Alignment       =   0
-      AllowAutoCorrection=   False
-      AllowSpellChecking=   False
-      AutoCapitalizationType=   0
-      AutoLayout      =   LunchTextField, 8, , 0, False, +1.00, 4, 1, 34, , True
-      AutoLayout      =   LunchTextField, 1, LunchLabel, 1, False, +1.00, 4, 1, 0, , True
-      AutoLayout      =   LunchTextField, 2, LunchLabel, 2, False, +1.00, 4, 1, 0, , True
-      AutoLayout      =   LunchTextField, 3, LunchLabel, 4, False, +1.00, 4, 1, 0, , True
-      BorderStyle     =   3
-      ControlCount    =   0
-      Enabled         =   True
-      Height          =   34
-      Hint            =   ""
-      InputType       =   0
-      Left            =   20
-      LockedInPosition=   False
-      MaximumCharactersAllowed=   0
-      Password        =   False
-      ReadOnly        =   False
-      ReturnCaption   =   0
-      Scope           =   2
-      SelectedText    =   ""
-      SelectionLength =   0
-      SelectionStart  =   0
-      Text            =   ""
-      TextColor       =   &c000000
-      TextFont        =   ""
-      TextSize        =   0
-      TintColor       =   &c000000
-      Top             =   103
-      Visible         =   True
-      Width           =   280
-      _ClosingFired   =   False
-   End
-   Begin MobileLabel DinnerLabel
-      AccessibilityHint=   ""
-      AccessibilityLabel=   ""
-      Alignment       =   0
-      AutoLayout      =   DinnerLabel, 1, LunchTextField, 1, False, +1.00, 4, 1, 0, , True
-      AutoLayout      =   DinnerLabel, 2, LunchTextField, 2, False, +1.00, 4, 1, 0, , True
-      AutoLayout      =   DinnerLabel, 3, LunchTextField, 4, False, +1.00, 4, 1, *kStdControlGapV, , True
-      AutoLayout      =   DinnerLabel, 8, , 0, False, +1.00, 4, 1, 30, , True
-      ControlCount    =   0
-      Enabled         =   True
-      Height          =   30
-      Left            =   20
-      LineBreakMode   =   0
-      LockedInPosition=   False
-      MaximumCharactersAllowed=   0
-      Scope           =   2
-      SelectedText    =   ""
-      SelectionLength =   0
-      SelectionStart  =   0
-      Text            =   "Dinner"
-      TextColor       =   &c000000
-      TextFont        =   "System Bold		"
-      TextSize        =   0
-      TintColor       =   &c000000
-      Top             =   145
-      Visible         =   True
-      Width           =   280
-      _ClosingFired   =   False
-   End
-   Begin MobileTextField DinnerTextField
-      AccessibilityHint=   ""
-      AccessibilityLabel=   ""
-      Alignment       =   0
-      AllowAutoCorrection=   False
-      AllowSpellChecking=   False
-      AutoCapitalizationType=   0
-      AutoLayout      =   DinnerTextField, 8, , 0, False, +1.00, 4, 1, 34, , True
-      AutoLayout      =   DinnerTextField, 1, DinnerLabel, 1, False, +1.00, 4, 1, 0, , True
-      AutoLayout      =   DinnerTextField, 2, DinnerLabel, 2, False, +1.00, 4, 1, 0, , True
-      AutoLayout      =   DinnerTextField, 3, DinnerLabel, 4, False, +1.00, 4, 1, 0, , True
-      BorderStyle     =   3
-      ControlCount    =   0
-      Enabled         =   True
-      Height          =   34
-      Hint            =   ""
-      InputType       =   0
-      Left            =   20
-      LockedInPosition=   False
-      MaximumCharactersAllowed=   0
-      Password        =   False
-      ReadOnly        =   False
-      ReturnCaption   =   0
-      Scope           =   2
-      SelectedText    =   ""
-      SelectionLength =   0
-      SelectionStart  =   0
-      Text            =   ""
-      TextColor       =   &c000000
-      TextFont        =   ""
-      TextSize        =   0
-      TintColor       =   &c000000
-      Top             =   175
-      Visible         =   True
-      Width           =   280
-      _ClosingFired   =   False
-   End
-   Begin MobileLabel NotesLabel
-      AccessibilityHint=   ""
-      AccessibilityLabel=   ""
-      Alignment       =   0
-      AutoLayout      =   NotesLabel, 1, DinnerTextField, 1, False, +1.00, 4, 1, 0, , True
-      AutoLayout      =   NotesLabel, 2, DinnerTextField, 2, False, +1.00, 4, 1, 0, , True
-      AutoLayout      =   NotesLabel, 3, DinnerTextField, 4, False, +1.00, 4, 1, *kStdControlGapV, , True
-      AutoLayout      =   NotesLabel, 8, , 0, False, +1.00, 4, 1, 30, , True
-      ControlCount    =   0
-      Enabled         =   True
-      Height          =   30
-      Left            =   20
-      LineBreakMode   =   0
-      LockedInPosition=   False
-      MaximumCharactersAllowed=   0
-      Scope           =   2
-      SelectedText    =   ""
-      SelectionLength =   0
-      SelectionStart  =   0
-      Text            =   "Notes"
-      TextColor       =   &c000000
-      TextFont        =   "System Bold		"
-      TextSize        =   0
-      TintColor       =   &c000000
-      Top             =   217
-      Visible         =   True
-      Width           =   280
-      _ClosingFired   =   False
-   End
-   Begin MobileTextArea NotesTextArea
-      AccessibilityHint=   ""
-      AccessibilityLabel=   ""
-      Alignment       =   0
-      AllowAutoCorrection=   False
-      AllowSpellChecking=   False
-      AutoCapitalizationType=   0
-      AutoLayout      =   NotesTextArea, 4, CloseButton, 3, False, +1.00, 4, 1, -*kStdControlGapV, , True
-      AutoLayout      =   NotesTextArea, 1, NotesLabel, 1, False, +1.00, 4, 1, 0, , True
-      AutoLayout      =   NotesTextArea, 2, NotesLabel, 2, False, +1.00, 4, 1, 0, , True
-      AutoLayout      =   NotesTextArea, 3, NotesLabel, 4, False, +1.00, 4, 1, 0, , True
-      BorderStyle     =   0
-      ControlCount    =   0
-      Enabled         =   True
-      Height          =   263
-      Left            =   20
-      LockedInPosition=   False
-      maximumCharactersAllowed=   0
-      ReadOnly        =   False
-      Scope           =   2
-      SelectedText    =   ""
-      SelectionLength =   0
-      SelectionStart  =   0
-      Text            =   ""
-      TextColor       =   &c000000
-      TextFont        =   ""
-      TextSize        =   0
-      TintColor       =   &c000000
-      Top             =   247
-      Visible         =   True
-      Width           =   280
-      _ClosingFired   =   False
-   End
    Begin Timer UpdatePlanTimer
-      Height          =   32
-      Height          =   32
-      Left            =   220
-      Left            =   220
       LockedInPosition=   False
       PanelIndex      =   -1
       Parent          =   ""
       Period          =   1000
       RunMode         =   0
       Scope           =   2
-      Top             =   220
-      Top             =   220
-      Width           =   32
-      Width           =   32
+   End
+   Begin iOSMobileTable DayPlanTable
+      AccessibilityHint=   ""
+      AccessibilityLabel=   ""
+      AllowRefresh    =   False
+      AllowSearch     =   False
+      AutoLayout      =   DayPlanTable, 4, BottomLayoutGuide, 3, False, +1.00, 4, 1, 0, , True
+      AutoLayout      =   DayPlanTable, 1, <Parent>, 1, False, +1.00, 4, 1, 0, , True
+      AutoLayout      =   DayPlanTable, 2, <Parent>, 2, False, +1.00, 4, 1, -0, , True
+      AutoLayout      =   DayPlanTable, 3, TopLayoutGuide, 4, False, +1.00, 4, 1, 0, , True
+      ControlCount    =   0
+      EditingEnabled  =   False
+      EditingEnabled  =   False
+      Enabled         =   True
+      EstimatedRowHeight=   -1
+      Format          =   0
+      Height          =   503
+      Left            =   0
+      LockedInPosition=   False
+      Scope           =   2
+      SectionCount    =   0
+      TintColor       =   &c000000
+      Top             =   65
+      Visible         =   True
+      Width           =   320
+      _ClosingFired   =   False
+      _OpeningCompleted=   False
    End
 End
 #tag EndMobileScreen
 
 #tag WindowCode
-	#tag Event
-		Sub Opening()
-		  LunchTextField.SetFocus
-		End Sub
-	#tag EndEvent
-
-	#tag Event
-		Sub ToolbarButtonPressed(button As MobileToolbarButton)
-		  DoUpdatePlan
-		  RaiseEvent ToolbarButtonPressed(button)
-		  
-		  LunchTextField.SetFocus
-		End Sub
-	#tag EndEvent
-
-
 	#tag Method, Flags = &h21
 		Private Sub DoUpdatePlan()
 		  UpdatePlanTimer.RunMode = Timer.RunModes.Off
 		  
+		  Break
 		  Plan.Lunch.RemoveAll
-		  Plan.Lunch.Add(New Meal(LunchTextField.Text.Trim))
+		  // Plan.Lunch.Add(New Meal(LunchTextField.Text.Trim))
 		  Plan.Dinner.RemoveAll
-		  Plan.Dinner.Add(New Meal(DinnerTextField.Text.Trim))
-		  Plan.Notes = NotesTextArea.Text.Trim
+		  // Plan.Dinner.Add(New Meal(DinnerTextField.Text.Trim))
+		  // Plan.Notes = NotesTextArea.Text.Trim
 		  
 		  If Plan.ID = 0 And Plan.Lunch.Count = 0 And Plan.Dinner.Count = 0 And Plan.Notes = "" Then
 		    Return
@@ -310,15 +97,66 @@ End
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
+		Private Function RowCount(table As iOSMobileTable, section As Integer) As Integer
+		  // Part of the iOSMobileTableDataSource interface.
+		  
+		  Return 3
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Function RowData(table As iOSMobileTable, section As Integer, row As Integer) As MobileTableCellData
+		  // Part of the iOSMobileTableDataSource interface.
+		  
+		  Var cell As MobileTableCellData
+		  
+		  Select Case row
+		  Case 0
+		    cell = table.CreateCell("Lunch", "", Nil, MobileTableCellData.AccessoryTypes.Disclosure)
+		    Var meals() As String
+		    For Each meal As Meal In Plan.Lunch
+		      meals.Add(meal.Name)
+		    Next
+		    
+		    cell.DetailText = String.FromArray(meals, ", ")
+		  Case 1
+		    cell = table.CreateCell("Dinner", "", Nil, MobileTableCellData.AccessoryTypes.Disclosure)
+		    Var meals() As String
+		    For Each meal As Meal In Plan.Dinner
+		      meals.Add(meal.Name)
+		    Next
+		    
+		    cell.DetailText = String.FromArray(meals, ", ")
+		  Case 2
+		    cell = table.CreateCell("Notes", "", Nil, MobileTableCellData.AccessoryTypes.Disclosure)
+		  End Select
+		  
+		  Return cell
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Function SectionCount(table As iOSMobileTable) As Integer
+		  // Part of the iOSMobileTableDataSource interface.
+		  
+		  Return 1
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Function SectionTitle(table As iOSMobileTable, section As Integer) As String
+		  // Part of the iOSMobileTableDataSource interface.
+		  
+		  Return ""
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
 		Private Sub UpdatePlan()
 		  UpdatePlanTimer.RunMode = Timer.RunModes.Single
 		End Sub
 	#tag EndMethod
 
-
-	#tag Hook, Flags = &h0
-		Event ToolbarButtonPressed(button As MobileToolbarButton)
-	#tag EndHook
 
 	#tag Hook, Flags = &h0
 		Event UpdatePlanRequested()
@@ -339,9 +177,11 @@ End
 			Set
 			  mPlan = value
 			  Title = value.PlanDate.SQLDate
-			  LunchTextField.Text = If(value.Lunch.Count > 0, value.Lunch(0).Name, "")
-			  DinnerTextField.Text = If(value.Dinner.Count > 0, value.Dinner(0).Name, "")
-			  NotesTextArea.Text = value.Notes
+			  DayPlanTable.ReloadDataSource
+			  
+			  // LunchTextField.Text = If(value.Lunch.Count > 0, value.Lunch(0).Name, "")
+			  // DinnerTextField.Text = If(value.Dinner.Count > 0, value.Dinner(0).Name, "")
+			  // NotesTextArea.Text = value.Notes
 			End Set
 		#tag EndSetter
 		Plan As DailyPlan
@@ -350,38 +190,27 @@ End
 
 #tag EndWindowCode
 
-#tag Events CloseButton
-	#tag Event
-		Sub Pressed()
-		  Self.Close
-		End Sub
-	#tag EndEvent
-#tag EndEvents
-#tag Events LunchTextField
-	#tag Event
-		Sub TextChanged()
-		  UpdatePlan
-		End Sub
-	#tag EndEvent
-#tag EndEvents
-#tag Events DinnerTextField
-	#tag Event
-		Sub TextChanged()
-		  UpdatePlan
-		End Sub
-	#tag EndEvent
-#tag EndEvents
-#tag Events NotesTextArea
-	#tag Event
-		Sub TextChanged()
-		  UpdatePlan
-		End Sub
-	#tag EndEvent
-#tag EndEvents
 #tag Events UpdatePlanTimer
 	#tag Event
 		Sub Run()
 		  DoUpdatePlan
+		End Sub
+	#tag EndEvent
+#tag EndEvents
+#tag Events DayPlanTable
+	#tag Event
+		Sub Opening()
+		  Me.DataSource = Self
+		End Sub
+	#tag EndEvent
+	#tag Event
+		Sub SelectionChanged(section As Integer, row As Integer)
+		  Var titles() As String = Array("Lunch", "Dinner", "Notes")
+		  
+		  Var s As New EditMealsScreen
+		  s.Title = titles(row)
+		  s.Plan = Plan
+		  s.Show(Self)
 		End Sub
 	#tag EndEvent
 #tag EndEvents

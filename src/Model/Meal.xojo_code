@@ -18,6 +18,14 @@ Protected Class Meal
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
+		IsDinner As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
+		IsLunch As Boolean = False
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
 		Name As String
 	#tag EndProperty
 

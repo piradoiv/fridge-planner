@@ -1,18 +1,15 @@
 #tag Class
 Protected Class MealPlanManager
-Implements iOSMobileTableDataSourceReordering
-	#tag Method, Flags = &h21
-		Private Function AllowRowMove(table As iOSMobileTable, section As Integer, row As Integer) As Boolean
-		  // Part of the iOSMobileTableDataSourceReordering interface.
-		  
-		  Return True
-		End Function
-	#tag EndMethod
-
 	#tag Method, Flags = &h0
 		Sub Constructor()
 		  mDB = New DatabaseManager
 		  mDB.Connect
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub DoMaintenance()
+		  mDB.RemoveOrphanMeals
 		End Sub
 	#tag EndMethod
 
@@ -29,6 +26,30 @@ Implements iOSMobileTableDataSourceReordering
 		    SavePlan(newPlan)
 		  Next
 		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function GetAllMeals() As Meal()
+		  Var temp As New Dictionary
+		  
+		  For Each meal As Meal In GetMealsForLunch
+		    If Not temp.HasKey(meal.ID) Then
+		      temp.Value(meal.ID) = meal
+		    End If
+		  Next
+		  For Each meal As Meal In GetMealsForDinner
+		    If Not temp.HasKey(meal.ID) Then
+		      temp.Value(meal.ID) = meal
+		    End If
+		  Next
+		  
+		  Var result() As Meal
+		  For Each entry As DictionaryEntry In temp
+		    result.Add(entry.Value)
+		  Next
+		  
+		  Return result
+		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
@@ -92,66 +113,6 @@ Implements iOSMobileTableDataSourceReordering
 		End Function
 	#tag EndMethod
 
-	#tag Method, Flags = &h21
-		Private Function RowCount(table As iOSMobileTable, section As Integer) As Integer
-		  // Part of the iOSMobileTableDataSource interface.
-		  
-		  Return MonthDayCount(Year, Month)
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h21
-		Private Function RowData(table As iOSMobileTable, section As Integer, row As Integer) As MobileTableCellData
-		  // Part of the iOSMobileTableDataSource interface.
-		  
-		  Var result As MobileTableCellData
-		  Var plan As DailyPlan
-		  For i As Integer = 0 To Plans.LastIndex
-		    If Plans(i).PlanDate.Day = row + 1 Then
-		      plan = Plans(i)
-		      Exit For i
-		    End If
-		  Next
-		  
-		  If plan = Nil Then
-		    Var day As New DateTime(Year, Month, row + 1)
-		    result = table.CreateCell("-", day.SQLDate)
-		    plan = New DailyPlan
-		    plan.PlanDate = day
-		  Else
-		    Var lunch() As String
-		    For Each meal As Meal In plan.Lunch
-		      lunch.Add(meal.Name)
-		    Next
-		    Var dinner() As String
-		    For Each meal As Meal In plan.Dinner
-		      dinner.Add(meal.Name)
-		    Next
-		    Var meals() As String
-		    If lunch.Count > 0 Then
-		      meals.Add("Lunch: " + String.FromArray(lunch, ", "))
-		    End If
-		    If dinner.Count > 0 Then
-		      meals.Add("Dinner: " + String.FromArray(dinner, ", "))
-		    End If
-		    
-		    result = table.CreateCell(If(meals.Count > 0, String.FromArray(meals, " | "), "-"), plan.PlanDate.SQLDate + " " + plan.Notes)
-		  End If
-		  
-		  result.Tag = plan
-		  
-		  Return result
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h21
-		Private Sub RowMoved(table As iOSMobileTable, sourceSection As Integer, sourceRow As Integer, destSection As Integer, destRow As Integer)
-		  // Part of the iOSMobileTableDataSourceReordering interface.
-		  
-		  Break
-		End Sub
-	#tag EndMethod
-
 	#tag Method, Flags = &h0
 		Sub SaveMeal(meal As Meal)
 		  mDB.InsertMeal(meal)
@@ -179,22 +140,6 @@ Implements iOSMobileTableDataSourceReordering
 		    mDB.UpdatePlan(plan)
 		  End If
 		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h21
-		Private Function SectionCount(table As iOSMobileTable) As Integer
-		  // Part of the iOSMobileTableDataSource interface.
-		  
-		  Return 1
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h21
-		Private Function SectionTitle(table As iOSMobileTable, section As Integer) As String
-		  // Part of the iOSMobileTableDataSource interface.
-		  
-		  Return ""
-		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0

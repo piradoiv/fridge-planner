@@ -2,6 +2,18 @@
 Protected Class App
 Inherits MobileApplication
 	#tag CompatibilityFlags = TargetIOS
+	#tag Event
+		Sub Opening()
+		  MealsManager = New MealPlanManager
+		End Sub
+	#tag EndEvent
+
+
+	#tag Property, Flags = &h0
+		MealsManager As MealPlanManager
+	#tag EndProperty
+
+
 	#tag ViewBehavior
 		#tag ViewProperty
 			Name="Name"
