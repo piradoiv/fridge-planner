@@ -3,6 +3,6 @@
 	#tag Color
 		Type=2
 		Platform=2
-		Name=opaqueSeparatorColor
+		Name=quaternaryLabelColor
 	#tag EndColor
 #tag EndColorGroup
