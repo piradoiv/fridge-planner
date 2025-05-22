@@ -32,7 +32,7 @@
    git clone https://github.com/piradoiv/fridge-planner.git
    ```
 2. **Open in Xojo**:
-   - Launch Xojo and open the `MealPlanner.xojo_project` file.
+   - Launch Xojo and open the `FridgePlanner.xojo_project` file.
 3. **Build and Run**:
    - Connect an iOS device or use the iOS Simulator.
    - Build and run the project in Xojo.
