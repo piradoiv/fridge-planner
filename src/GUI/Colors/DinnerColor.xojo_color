@@ -1,0 +1,9 @@
+#tag ColorGroup
+	CodeName=DinnerColor
+	#tag Color
+		Type=1
+		Platform=2
+		Light=DE750000
+		Dark=A0590700
+	#tag EndColor
+#tag EndColorGroup

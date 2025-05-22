@@ -1,0 +1,9 @@
+#tag ColorGroup
+	CodeName=CalendarSelectedTextColor
+	#tag Color
+		Type=1
+		Platform=2
+		Light=FFFFFF00
+		Dark=00000000
+	#tag EndColor
+#tag EndColorGroup

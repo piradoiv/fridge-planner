@@ -43,8 +43,6 @@ Begin MobileContainer CalendarContainer
       Height          =   30
       Left            =   20
       LockedInPosition=   False
-      PanelIndex      =   -1
-      Parent          =   ""
       Scope           =   2
       TintColor       =   &c000000
       Top             =   0
@@ -120,19 +118,19 @@ End
 		    Var isSelectedDate As Boolean = currentDay.Year = SelectedDate.Year And currentDay.Month = SelectedDate.Month And currentDay.Day = SelectedDate.Day
 		    
 		    g.Font = If(isSelectedDate, Font.BoldSystemFont, Font.SystemFont)
-		    g.DrawingColor = If(currentDay.Month = SelectedDate.Month, Color.Black, Color.LightGray)
+		    g.DrawingColor = If(currentDay.Month = SelectedDate.Month, CalendarDefaultTextColor, CalendarSubtleTextColor)
 		    If currentDay.SQLDate = DateTime.Now.SQLDate Then
 		      g.Font = Font.BoldSystemFont
-		      g.DrawingColor = Color.Red
+		      g.DrawingColor = CalendarTodayTextColor
 		    End If
 		    
 		    Var dayString As String = currentDay.Day.ToString
 		    Var dayStringWidth As Double = g.TextWidth(dayString)
 		    
 		    If isSelectedDate Then
-		      g.DrawingColor = Color.Black
-		      g.FillOval(x + cellWidth / 2 - g.Font.Ascent, y + innerPadding / 2, g.Font.Ascent * 2, g.Font.Ascent * 2)
-		      g.DrawingColor = Color.White
+		      g.DrawingColor = CalendarSelectedBackgroundColor
+		      g.FillOval(x + cellWidth / 2 - g.Font.Ascent, y - 1 + innerPadding / 2, g.Font.Ascent * 2, g.Font.Ascent * 2)
+		      g.DrawingColor = CalendarSelectedTextColor
 		    End If
 		    g.DrawText(dayString, x + cellWidth / 2 - dayStringWidth / 2, y + g.Font.Ascent + innerPadding)
 		    
@@ -156,17 +154,18 @@ End
 		      
 		      Var currentX As Double = x + cellWidth / 2 - (planIndicatorWidth * indicatorParts / 2)
 		      If plan.Lunch.Count > 0 Then
-		        g.DrawingColor = Color.Green
+		        g.DrawingColor = LunchColor
 		        g.FillRoundRectangle(currentX, y + cellHeight - planIndicatorHeight - innerPadding + 3, planIndicatorWidth, planIndicatorHeight, 4, 4)
 		        currentX = currentX + planIndicatorWidth
 		      End If
 		      If plan.Dinner.Count > 0 Then
-		        g.DrawingColor = Color.Orange
+		        g.DrawingColor = DinnerColor
 		        g.FillRoundRectangle(currentX, y + cellHeight - planIndicatorHeight - innerPadding + 3, planIndicatorWidth, planIndicatorHeight, 4, 4)
 		        currentX = currentX + planIndicatorWidth
 		      End If
 		      If plan.Notes <> "" Then
-		        g.DrawingColor = Color.Blue
+		        g.DrawingColor = NotesColor
+		        
 		        g.FillRoundRectangle(currentX, y + cellHeight - planIndicatorHeight - innerPadding + 3, planIndicatorWidth, planIndicatorHeight, 4, 4)
 		        currentX = currentX + planIndicatorWidth
 		      End If
@@ -220,7 +219,7 @@ End
 		  g.Font = Font.BoldSystemFont(13)
 		  
 		  For i As Integer = 0 To 6
-		    g.DrawingColor = If(i < 5, Color.Black, Color.LightGray)
+		    g.DrawingColor = If(i < 5, CalendarDefaultTextColor, CalendarSubtleTextColor)
 		    Var dayWidth As Double = g.TextWidth(dayNames(i))
 		    g.DrawText(dayNames(i), i * cellWidth + cellWidth / 2 - dayWidth / 2, g.Height - 5)
 		  Next

@@ -1,0 +1,9 @@
+#tag ColorGroup
+	CodeName=NotesColor
+	#tag Color
+		Type=1
+		Platform=2
+		Light=68DE0000
+		Dark=4EA00700
+	#tag EndColor
+#tag EndColorGroup

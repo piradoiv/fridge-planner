@@ -1,0 +1,8 @@
+#tag ColorGroup
+	CodeName=CalendarSubtleTextColor
+	#tag Color
+		Type=2
+		Platform=2
+		Name=secondaryLabelColor
+	#tag EndColor
+#tag EndColorGroup

@@ -1,0 +1,9 @@
+#tag ColorGroup
+	CodeName=CalendarTodayTextColor
+	#tag Color
+		Type=1
+		Platform=2
+		Light=FF2F3300
+		Dark=CC393300
+	#tag EndColor
+#tag EndColorGroup

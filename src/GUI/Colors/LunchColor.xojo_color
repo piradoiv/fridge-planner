@@ -1,0 +1,9 @@
+#tag ColorGroup
+	CodeName=LunchColor
+	#tag Color
+		Type=1
+		Platform=2
+		Light=0095DE00
+		Dark=076BA000
+	#tag EndColor
+#tag EndColorGroup
