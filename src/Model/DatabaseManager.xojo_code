@@ -6,12 +6,12 @@ Protected Class DatabaseManager
 		  // Get the Documents folder
 		  Var documents As FolderItem = SpecialFolder.Documents
 		  // Create a subfolder with the app's bundle identifier
-		  Var appFolder As FolderItem = documents.Child("es.rcruz.mealplanner")
+		  Var appFolder As FolderItem = documents.Child("es.rcruz.fridgeplanner")
 		  If Not appFolder.Exists Then
 		    appFolder.CreateFolder
 		  End If
 		  // Store the database in the subfolder
-		  DB.DatabaseFile = appFolder.Child("MealPlanner.db")
+		  DB.DatabaseFile = appFolder.Child("FridgePlanner.db")
 		  
 		  #If DebugBuild
 		    System.DebugLog("DB File: " + DB.DatabaseFile.NativePath)

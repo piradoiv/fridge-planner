@@ -55,7 +55,7 @@ Begin MobileScreen MainScreen Implements iOSMobileTableDataSourceReordering
       AutoLayout      =   Calendar, 3, TopLayoutGuide, 4, False, +1.00, 4, 1, 0, , True
       ControlCount    =   0
       Enabled         =   True
-      Height          =   247
+      Height          =   491
       Left            =   0
       LockedInPosition=   False
       Scope           =   2
@@ -89,21 +89,13 @@ Begin MobileScreen MainScreen Implements iOSMobileTableDataSourceReordering
       Width           =   97.0
    End
    Begin Thread GeneratePDFThread
-      Height          =   32
-      Height          =   32
-      Left            =   120
-      Left            =   120
       LockedInPosition=   False
       PanelIndex      =   -1
       Parent          =   ""
       Priority        =   5
       Scope           =   2
       StackSize       =   0
-      Top             =   120
-      Top             =   120
       Type            =   0
-      Width           =   32
-      Width           =   32
    End
    Begin DayPlanTableContainer DayPlanTable
       AccessibilityHint=   ""
@@ -119,7 +111,7 @@ Begin MobileScreen MainScreen Implements iOSMobileTableDataSourceReordering
       LockedInPosition=   False
       Scope           =   2
       TintColor       =   &c000000
-      Top             =   312
+      Top             =   556
       Visible         =   True
       Width           =   320
    End
@@ -289,7 +281,7 @@ End
 		  Wend
 		  
 		  // Save the file
-		  Var documents As FolderItem = SpecialFolder.Documents.Child("es.rcruz.mealplanner")
+		  Var documents As FolderItem = SpecialFolder.Documents.Child("es.rcruz.fridgeplanner")
 		  If Not documents.Exists Then
 		    documents.CreateFolder
 		  End If
