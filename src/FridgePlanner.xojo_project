@@ -1,7 +1,7 @@
 Type=iOS
 RBProjectVersion=2025.02
 MinIDEVersion=20190300
-OrigIDEVersion=20250101
+OrigIDEVersion=20250200
 Class=App;App.xojo_code;&h0000000026423FFF;&h0000000000000000;false
 iOSLaunchScreen=LaunchScreen;LaunchScreen.xojo_code;&h0000000030F797FF;&h0000000000000000;false
 AppIcons=App Icon;App Icon.xojo_image;&h000000005674CFFF;&h0000000000000000;false
@@ -54,7 +54,7 @@ MacCreator=
 MDI=0
 MDICaption=
 DefaultEncoding=&h0
-AppIcon=MealPlanner.xojo_resources;&h0
+AppIcon=FridgePlanner.xojo_resources;&h0
 OSXBundleID=es.rcruz.fridgeplanner
 DebuggerCommandLine=
 UseGDIPlus=False
