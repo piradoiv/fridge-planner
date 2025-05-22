@@ -1,0 +1,8 @@
+#tag ColorGroup
+	CodeName=CalendarBorderColor
+	#tag Color
+		Type=2
+		Platform=2
+		Name=opaqueSeparatorColor
+	#tag EndColor
+#tag EndColorGroup

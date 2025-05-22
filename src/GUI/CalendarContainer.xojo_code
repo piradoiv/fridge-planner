@@ -115,6 +115,12 @@ End
 		  While currentDay.SQLDate <= lastDay.SQLDate
 		    Var x As Double = padding + cellWidth * i
 		    Var y As Double = cellHeight * j
+		    
+		    If i = 0 And currentDay > firstDay Then
+		      g.DrawingColor = CalendarBorderColor
+		      g.DrawLine(0, y, g.Width, y)
+		    End If
+		    
 		    Var isSelectedDate As Boolean = currentDay.Year = SelectedDate.Year And currentDay.Month = SelectedDate.Month And currentDay.Day = SelectedDate.Day
 		    
 		    g.Font = If(isSelectedDate, Font.BoldSystemFont, Font.SystemFont)
