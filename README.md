@@ -1,3 +1,7 @@
+<p align="center">
+   <img src="https://github.com/user-attachments/assets/5cca5822-138f-489a-8935-cbfb558b0c7e" alt="Fridge Planner Logo">
+</p>
+
 # FridgePlanner
 
 **FridgePlanner** is a simple iOS meal planning app built with Xojo for the May 2025 open-source challenge. It helps you plan lunch and dinner for a month, replacing paper or Excel-based planners with a mobile solution. The app allows you to duplicate previous months, swap meals between days, auto-save meals for reuse, and export a black-and-white A4 PDF for printing and attaching to your fridge. Designed for daily use, FridgePlanner is lightweight, offline, and user-friendly, showcasing Xojo’s rapid development capabilities for iOS apps.
