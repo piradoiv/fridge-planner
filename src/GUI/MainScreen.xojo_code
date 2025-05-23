@@ -55,7 +55,7 @@ Begin MobileScreen MainScreen Implements iOSMobileTableDataSourceReordering
       AutoLayout      =   Calendar, 3, TopLayoutGuide, 4, False, +1.00, 4, 1, 0, , True
       ControlCount    =   0
       Enabled         =   True
-      Height          =   491
+      Height          =   247
       Left            =   0
       LockedInPosition=   False
       Scope           =   2
@@ -111,7 +111,7 @@ Begin MobileScreen MainScreen Implements iOSMobileTableDataSourceReordering
       LockedInPosition=   False
       Scope           =   2
       TintColor       =   &c000000
-      Top             =   556
+      Top             =   312
       Visible         =   True
       Width           =   320
    End
@@ -423,6 +423,7 @@ End
 		Sub DaySelected(date As DateTime)
 		  CurrentDate = New DateTime(date.Year, date.Month, 1)
 		  LoadPlans
+		  RegeneratePDF
 		End Sub
 	#tag EndEvent
 #tag EndEvents
@@ -451,8 +452,8 @@ End
 #tag Events DayPlanTable
 	#tag Event
 		Sub ReloadRequested()
-		  RegeneratePDF
 		  LoadPlans
+		  RegeneratePDF
 		  Calendar.Reload
 		End Sub
 	#tag EndEvent
