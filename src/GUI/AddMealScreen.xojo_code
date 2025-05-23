@@ -162,11 +162,14 @@ End
 		  Meals.RemoveAll
 		  
 		  Var mealName As String = MealNameTextField.Text.Trim
-		  For Each meal As Meal In App.MealsManager.GetAllMeals
+		  Var allMeals() As Meal = If(IsLunch, App.MealsManager.GetMealsForLunch, App.MealsManager.GetMealsForDinner)
+		  For Each meal As Meal In allMeals
 		    If mealName = "" Or meal.Name.Contains(mealName) Then
 		      Meals.Add(meal)
 		    End If
 		  Next
+		  
+		  Meals.Sort(WeakAddressOf SortMeals)
 		  
 		  SuggestionsTable.ReloadDataSource
 		End Sub
@@ -205,6 +208,12 @@ End
 		  // Part of the iOSMobileTableDataSource interface.
 		  
 		  Return ""
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Function SortMeals(value1 As Meal, value2 As Meal) As Integer
+		  Return value1.Name.Compare(value2.Name)
 		End Function
 	#tag EndMethod
 
