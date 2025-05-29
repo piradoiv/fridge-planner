@@ -210,7 +210,7 @@ End
 		Sub ToolbarButtonPressed(button As MobileToolbarButton)
 		  Select Case button
 		  Case SaveButton
-		    Plan.BackgroundColor = Color.FromString(BackgroundTextField.Text.Replace("#", "&h00"))
+		    Plan.BackgroundColor = Color.FromString(BackgroundTextField.Text.Replace("#", "&h"))
 		    Plan.BorderSize = BorderSizeTextField.Text.ToInteger
 		    App.MealsManager.SavePlan(Plan)
 		    

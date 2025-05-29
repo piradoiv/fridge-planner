@@ -150,16 +150,10 @@ End
 		    Calendar.SelectedDate = CurrentDate
 		    RegeneratePDF
 		  Case "pdf"
-		    If mPDFFile = Nil Then
-		      If GeneratePDFThread.ThreadState = Thread.ThreadStates.Running Then
-		        GeneratePDFThread.Stop
-		      End If
-		      mShouldShowPDF = True
-		      GeneratePDFThread.Start
-		    Else
-		      mShouldShowPDF = False
-		      ShowPDF
-		    End If
+		    Var s As New DecorationScreen
+		    s.Decoration = mDecoration
+		    AddHandler s.GeneratePDFWithDecoration, WeakAddressOf GeneratePDFWithDecorationHandler
+		    s.ShowModal(Self)
 		  Case "today"
 		    Var now As DateTime = DateTime.Now
 		    CurrentDate = New DateTime(now.Year, now.Month, 1)
@@ -189,6 +183,38 @@ End
 		  Var pdf As New PDFDocument(PDFDocument.PageSizes.A4)
 		  pdf.Landscape = True
 		  Var g As Graphics = pdf.Graphics
+		  
+		  // Draw the border decoration
+		  If mDecoration <> "" Then
+		    Var chars() As String = mDecoration.Characters
+		    Var pics() As Picture
+		    Const emojiPicSize = 256
+		    For i As Integer = 0 To chars.LastIndex
+		      Var emojiPic As New Picture(emojiPicSize, emojiPicSize)
+		      Var gg As Graphics = emojiPic.Graphics
+		      
+		      Var c As String = chars(System.Random.InRange(0, chars.LastIndex))
+		      gg.Font = New Font("Helvetica", emojiPicSize)
+		      Var textWidth As Double = gg.TextWidth(c)
+		      Var textHeight As Double = gg.TextHeight(c, 1000)
+		      gg.DrawText(c, 0, gg.Font.Ascent * .9)
+		      
+		      pics.Add(emojiPic)
+		    Next
+		    
+		    For i As Integer = 1 To 256
+		      Var pic As Picture = pics(System.Random.InRange(0, pics.LastIndex))
+		      Var emojiSize As Integer = System.Random.InRange(25, 50)
+		      Var randomX As Integer = System.Random.InRange(-25, g.Width)
+		      Var randomY As Integer = System.Random.InRange(-25, g.Height)
+		      
+		      g.DrawPicture(pic, randomX, randomY, emojiSize, emojiSize, 0, 0, pic.Width, pic.Height)
+		    Next
+		  End If
+		  
+		  // Clear the zone where the title and week days will appear
+		  g.DrawingColor = Color.White
+		  g.FillRectangle(outerPadding, 0, g.Width - outerPadding * 2, g.Height - outerPadding)
 		  
 		  // Initial calculations
 		  Var firstDay As DateTime = CurrentDate
@@ -224,6 +250,7 @@ End
 		  
 		  // Draw title and header
 		  g.Font = New Font("Helvetica Bold", 20)
+		  g.DrawingColor = Color.Black
 		  Var monthName As String = CurrentDate.ToString("MMMM YYYY").Titlecase
 		  Var monthNameWidth As Double = g.TextWidth(monthName)
 		  g.DrawText(monthName, g.Width / 2 - monthNameWidth / 2, titleHeight / 2 + g.Font.Ascent)
@@ -250,14 +277,16 @@ End
 		    g.FillRectangle(x, y, cellWidth, cellHeight)
 		    
 		    g.PenSize = plan.BorderSize
-		    g.DrawingColor = Color.Black
+		    g.DrawingColor = If(plan.BorderSize > 1, Color.Black, Color.LightGray)
 		    g.DrawRectangle(x, y, cellWidth, cellHeight)
 		    
+		    g.DrawingColor = Color.DarkGray
 		    g.Font = New Font("Helvetica", 12)
 		    g.DrawText(currentDay.Day.ToString, x + 5, y + 5 + g.Font.Ascent)
 		    
 		    // Draw the daily plan
 		    g.Font = New Font("Helvetica", 10)
+		    g.DrawingColor = Color.Black
 		    If plan = Nil Then
 		      Continue
 		    End If
@@ -300,6 +329,22 @@ End
 		  
 		  Return f
 		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub GeneratePDFWithDecorationHandler(sender As DecorationScreen, decoration As String)
+		  If mPDFFile = Nil Or mDecoration <> decoration Then
+		    mDecoration = decoration
+		    If GeneratePDFThread.ThreadState = Thread.ThreadStates.Running Then
+		      GeneratePDFThread.Stop
+		    End If
+		    mShouldShowPDF = True
+		    GeneratePDFThread.Start
+		  Else
+		    mShouldShowPDF = False
+		    ShowPDF
+		  End If
+		End Sub
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
@@ -411,6 +456,10 @@ End
 
 	#tag Property, Flags = &h21
 		Private CurrentDate As DateTime
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private mDecoration As String
 	#tag EndProperty
 
 	#tag Property, Flags = &h21

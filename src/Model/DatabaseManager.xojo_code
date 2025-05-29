@@ -168,7 +168,7 @@ Protected Class DatabaseManager
 		    If c = "FFFFFF" Then
 		      plan.BackgroundColor = Color.White
 		    Else
-		      plan.BackgroundColor = Color.FromString("&c" + c + "00")
+		      plan.BackgroundColor = Color.FromString("&c" + c)
 		    End If
 		    plan.BorderSize = planRow.Column("border_size").IntegerValue
 		    
