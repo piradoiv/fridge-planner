@@ -1,5 +1,5 @@
 #tag MobileContainer
-Begin MobileContainer DayPlanTableContainer Implements  iOSMobileTableDataSourceEditing
+Begin MobileContainer DayPlanTableContainer Implements iOSMobileTableDataSourceEditing
    AccessibilityHint=   ""
    AccessibilityLabel=   ""
    Compatibility   =   ""
@@ -90,7 +90,7 @@ End
 		  Case 1
 		    Return If(Plan = Nil, 1, Plan.Dinner.Count + 1)
 		  Case 2
-		    Return 2
+		    Return 3
 		  End Select
 		End Function
 	#tag EndMethod
@@ -121,6 +121,8 @@ End
 		    Case 0
 		      cell = table.CreateCell("Edit Notes", "", Nil, MobileTableCellData.AccessoryTypes.Disclosure)
 		    Case 1
+		      cell = table.CreateCell("Edit Style", "", Nil, MobileTableCellData.AccessoryTypes.Disclosure)
+		    Case 2
 		      cell = table.CreateCell("Swap meals with another day", "", Nil, MobileTableCellData.AccessoryTypes.Disclosure)
 		    End Select
 		  End Select
@@ -158,9 +160,15 @@ End
 		Private Function SectionTitle(table As iOSMobileTable, section As Integer) As String
 		  // Part of the iOSMobileTableDataSource interface.
 		  
-		  Var titles() As String = Array("Lunch", "Dinner", "Actions")
+		  Var titles() As String = Array("Lunch", "Dinner", "Day Actions")
 		  Return titles(section)
 		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub TriggerReload(sender As MobileScreen)
+		  RaiseEvent ReloadRequested
+		End Sub
 	#tag EndMethod
 
 
@@ -184,22 +192,34 @@ End
 	#tag EndEvent
 	#tag Event
 		Sub SelectionChanged(section As Integer, row As Integer)
-		  Var s As New AddMealScreen
-		  AddHandler s.AddMeal, WeakAddressOf AddMealHandler
 		  
 		  Select Case section
 		  Case 0
+		    Var s As New AddMealScreen
+		    AddHandler s.AddMeal, WeakAddressOf AddMealHandler
 		    If row > Plan.Lunch.LastIndex Then
 		      s.IsLunch = True
 		      s.ShowModal(MobileScreen(App.CurrentLayout.Content))
 		    End If
 		  Case 1
+		    Var s As New AddMealScreen
+		    AddHandler s.AddMeal, WeakAddressOf AddMealHandler
 		    If row > Plan.Dinner.LastIndex Then
 		      s.IsLunch = False
 		      s.ShowModal(MobileScreen(App.CurrentLayout.Content))
 		    End If
 		  Case 2
-		    Break
+		    Select Case row
+		    Case 0
+		      Break
+		    Case 1
+		      Var s As New DailyPlanStyleScreen
+		      AddHandler s.Closing, WeakAddressOf TriggerReload
+		      s.Plan = Plan
+		      s.Show(MobileScreen(App.CurrentLayout.Content))
+		    Case 2
+		      Break
+		    End Select
 		  End Select
 		End Sub
 	#tag EndEvent

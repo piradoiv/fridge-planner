@@ -17,6 +17,7 @@ Class=DatabaseManager;Model/DatabaseManager.xojo_code;&h0000000031ACEFFF;&h00000
 Class=Meal;Model/Meal.xojo_code;&h000000002674D7FF;&h000000006D406FFF;false
 Class=MealPlanManager;Model/MealPlanManager.xojo_code;&h0000000062396FFF;&h000000006D406FFF;false
 MobileScreen=AddMealScreen;GUI/AddMealScreen.xojo_code;&h000000006EBC2FFF;&h000000001AA147FF;false
+MobileScreen=DailyPlanStyleScreen;GUI/DailyPlanStyleScreen.xojo_code;&h00000000672D1FFF;&h000000001AA147FF;false
 MobileContainer=CalendarContainer;GUI/CalendarContainer.xojo_code;&h000000005BC8E7FF;&h000000001AA147FF;false
 MobileContainer=DayPlanTableContainer;GUI/DayPlanTableContainer.xojo_code;&h000000000BBD9FFF;&h000000001AA147FF;false
 Folder=Colors;GUI/Colors;&h0000000071C0EFFF;&h000000001AA147FF;false

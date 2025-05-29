@@ -243,6 +243,13 @@ End
 		  While currentDay <= lastDay
 		    Var x As Double = dayOfWeek * cellWidth + outerPadding
 		    Var y As Double = currentWeek * cellHeight + outerPadding + titleHeight + headerHeight
+		    
+		    Var plan As DailyPlan = App.MealsManager.GetPlanForDate(currentDay)
+		    
+		    g.DrawingColor = plan.BackgroundColor
+		    g.FillRectangle(x, y, cellWidth, cellHeight)
+		    
+		    g.PenSize = plan.BorderSize
 		    g.DrawingColor = Color.Black
 		    g.DrawRectangle(x, y, cellWidth, cellHeight)
 		    
@@ -251,7 +258,6 @@ End
 		    
 		    // Draw the daily plan
 		    g.Font = New Font("Helvetica", 10)
-		    Var plan As DailyPlan = App.MealsManager.GetPlanForDate(currentDay)
 		    If plan = Nil Then
 		      Continue
 		    End If

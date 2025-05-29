@@ -52,6 +52,8 @@ Protected Class DatabaseManager
 		  "FOREIGN KEY (plan_id) REFERENCES plans (id), " + _
 		  "FOREIGN KEY (meal_id) REFERENCES meals (id))")
 		  
+		  DB.ExecuteSQL("CREATE TABLE IF NOT EXISTS migrations (version INTEGER NOT NULL)")
+		  
 		  Var indexes() As String
 		  indexes.Add("CREATE INDEX idx_is_lunch ON meals (is_lunch)")
 		  indexes.Add("CREATE INDEX idx_is_dinner ON meals (is_dinner)")
@@ -67,6 +69,8 @@ Protected Class DatabaseManager
 		      // Ignore
 		    End Try
 		  Next
+		  
+		  RunMigrations
 		End Sub
 	#tag EndMethod
 
@@ -88,6 +92,18 @@ Protected Class DatabaseManager
 		  Next
 		  
 		  Return result
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Function GetLastMigrationIndex() As Integer
+		  Var rows As RowSet = DB.SelectSQL("SELECT version FROM migrations")
+		  
+		  For Each row As DatabaseRow In rows
+		    Return row.Column("version").IntegerValue
+		  Next
+		  
+		  Return -1
 		End Function
 	#tag EndMethod
 
@@ -148,6 +164,13 @@ Protected Class DatabaseManager
 		    plan.ID = planRow.Column("id").IntegerValue
 		    plan.PlanDate = DateTime.FromString(planRow.Column("plan_date").StringValue)
 		    plan.Notes = planRow.Column("notes").StringValue
+		    Var c As String = planRow.Column("background_color").StringValue
+		    If c = "FFFFFF" Then
+		      plan.BackgroundColor = Color.White
+		    Else
+		      plan.BackgroundColor = Color.FromString("&c" + c + "00")
+		    End If
+		    plan.BorderSize = planRow.Column("border_size").IntegerValue
 		    
 		    Var mealsRS As RowSet = DB.SelectSQL("SELECT plans_meals.*, meals.name FROM plans_meals JOIN meals ON meals.id = plans_meals.meal_id WHERE plan_id = ? GROUP BY meal_id", plan.ID)
 		    For Each mealRow As DatabaseRow In mealsRS
@@ -200,8 +223,8 @@ Protected Class DatabaseManager
 		    System.DebugLog(CurrentMethodName + " date " + plan.PlanDate.SQLDate)
 		  #EndIf
 		  
-		  Const SQL = "INSERT INTO plans (plan_date, notes) VALUES (?, ?)"
-		  DB.ExecuteSQL(SQL, plan.PlanDate.SQLDate, plan.Notes)
+		  Const SQL = "INSERT INTO plans (plan_date, notes, background_color, border_size) VALUES (?, ?, ?, ?)"
+		  DB.ExecuteSQL(SQL, plan.PlanDate.SQLDate, plan.Notes, plan.BackgroundColor.ToString.Replace("&h00", ""), plan.BorderSize)
 		  plan.ID = DB.LastRowID
 		  
 		  UpdatePlanMeals(plan)
@@ -226,14 +249,51 @@ Protected Class DatabaseManager
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h21
+		Private Sub RunMigrations()
+		  Var migrations() As String
+		  Var migration() As String
+		  
+		  // Add background_color to plans
+		  migration.Add("PRAGMA foreign_keys = 0")
+		  migration.Add("CREATE TABLE sqlitestudio_temp_table AS SELECT * FROM plans")
+		  migration.Add("DROP TABLE plans")
+		  migration.Add("CREATE TABLE plans (id INTEGER PRIMARY KEY AUTOINCREMENT, plan_date TEXT UNIQUE, notes TEXT, background_color VARCHAR (8) DEFAULT [00FFFFFF])")
+		  migration.Add("INSERT INTO plans (id, plan_date, notes) SELECT id, plan_date, notes FROM sqlitestudio_temp_table")
+		  migration.Add("DROP TABLE sqlitestudio_temp_table")
+		  migration.Add("PRAGMA foreign_keys = 1")
+		  
+		  migrations.Add(String.FromArray(migration, ";"))
+		  migration.RemoveAll
+		  
+		  // Add border_size to plans
+		  migration.Add("PRAGMA foreign_keys = 0")
+		  migration.Add("CREATE TABLE sqlitestudio_temp_table AS SELECT * FROM plans")
+		  migration.Add("DROP TABLE plans")
+		  migration.Add("CREATE TABLE plans (id INTEGER PRIMARY KEY AUTOINCREMENT, plan_date TEXT UNIQUE, notes TEXT, background_color VARCHAR (8) DEFAULT [00FFFFFF], border_size INTEGER DEFAULT 1)")
+		  migration.Add("INSERT INTO plans (id, plan_date, notes) SELECT id, plan_date, notes FROM sqlitestudio_temp_table")
+		  migration.Add("DROP TABLE sqlitestudio_temp_table")
+		  migration.Add("PRAGMA foreign_keys = 1")
+		  
+		  migrations.Add(String.FromArray(migration, ";"))
+		  migration.RemoveAll
+		  
+		  For i As Integer = GetLastMigrationIndex To migrations.LastIndex - 1
+		    DB.ExecuteSQL(migrations(i + 1))
+		    DB.ExecuteSQL("DELETE FROM migrations")
+		    DB.ExecuteSQL("INSERT INTO migrations (version) VALUES (?)", i + 1)
+		  Next
+		End Sub
+	#tag EndMethod
+
 	#tag Method, Flags = &h0
 		Sub UpdatePlan(plan As DailyPlan)
 		  #If LogQueries
 		    System.DebugLog(CurrentMethodName + " plan date " + plan.PlanDate.SQLDate)
 		  #EndIf
 		  
-		  Var sql As String = "UPDATE plans SET notes = ? WHERE id = ?"
-		  DB.ExecuteSQL(sql, plan.Notes, plan.ID)
+		  Var sql As String = "UPDATE plans SET notes = ?, background_color = ?, border_size = ? WHERE id = ?"
+		  DB.ExecuteSQL(sql, plan.Notes, plan.BackgroundColor.ToString().Replace("&h00", ""), plan.BorderSize, plan.ID)
 		  
 		  UpdatePlanMeals(plan)
 		End Sub

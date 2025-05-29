@@ -116,16 +116,32 @@ End
 		    Var x As Double = padding + cellWidth * i
 		    Var y As Double = cellHeight * j
 		    
+		    Var plan As DailyPlan = App.MealsManager.GetPlanForDate(currentDay)
+		    
 		    If i = 0 And currentDay > firstDay Then
 		      g.DrawingColor = CalendarBorderColor
+		      g.PenSize = 1
 		      g.DrawLine(0, y, g.Width, y)
 		    End If
 		    
 		    Var isSelectedDate As Boolean = currentDay.Year = SelectedDate.Year And currentDay.Month = SelectedDate.Month And currentDay.Day = SelectedDate.Day
+		    Var isToday As Boolean = currentDay.SQLDate = DateTime.Now.SQLDate
+		    
+		    If plan.BackgroundColor <> Color.White Then
+		      g.DrawingColor = plan.BackgroundColor
+		      g.PenSize = 1
+		      g.FillRectangle(x, y, cellWidth, cellHeight)
+		    End If
+		    
+		    If plan.BorderSize > 1 Then
+		      g.PenSize = plan.BorderSize - 1
+		      g.DrawingColor = New ColorGroup(Color.Black, Color.White)
+		      g.DrawRectangle(x, y, cellWidth, cellHeight)
+		    End If
 		    
 		    g.Font = If(isSelectedDate, Font.BoldSystemFont, Font.SystemFont)
 		    g.DrawingColor = If(currentDay.Month = SelectedDate.Month, CalendarDefaultTextColor, CalendarSubtleTextColor)
-		    If currentDay.SQLDate = DateTime.Now.SQLDate Then
+		    If isToday Then
 		      g.Font = Font.BoldSystemFont
 		      g.DrawingColor = CalendarTodayTextColor
 		    End If
@@ -134,13 +150,12 @@ End
 		    Var dayStringWidth As Double = g.TextWidth(dayString)
 		    
 		    If isSelectedDate Then
-		      g.DrawingColor = CalendarSelectedBackgroundColor
+		      g.DrawingColor = If(isToday, CalendarTodayTextColor, CalendarSelectedBackgroundColor)
 		      g.FillOval(x + cellWidth / 2 - g.Font.Ascent, y - 1 + innerPadding / 2, g.Font.Ascent * 2, g.Font.Ascent * 2)
-		      g.DrawingColor = CalendarSelectedTextColor
+		      g.DrawingColor = If(isToday, New ColorGroup(Color.White), CalendarSelectedTextColor)
 		    End If
 		    g.DrawText(dayString, x + cellWidth / 2 - dayStringWidth / 2, y + g.Font.Ascent + innerPadding)
 		    
-		    Var plan As DailyPlan = App.MealsManager.GetPlanForDate(currentDay)
 		    If plan <> Nil Then
 		      Var indicatorParts As Integer = 0
 		      If plan.Lunch.Count > 0 Then
