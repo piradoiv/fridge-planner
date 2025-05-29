@@ -2,3 +2,6 @@
 **/Builds *
 **/.DS_Store
 **/*.debug.app.dSYM*
+src/Packaging.log
+src/DistributionSummary.plist
+src/ExportOptions.plist
