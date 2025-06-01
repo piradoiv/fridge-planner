@@ -14,6 +14,24 @@ Begin MobileScreen MainScreen Implements iOSMobileTableDataSourceReordering
    TintColor       =   &c000000
    Title           =   "Untitled"
    Top             =   0
+   Begin DayPlanTableContainer DayPlanTable
+      AccessibilityHint=   ""
+      AccessibilityLabel=   ""
+      AutoLayout      =   DayPlanTable, 4, BottomLayoutGuide, 3, False, +1.00, 4, 1, 0, , True
+      AutoLayout      =   DayPlanTable, 8, <Parent>, 8, False, +0.45, 4, 1, 0, , True
+      AutoLayout      =   DayPlanTable, 1, <Parent>, 1, False, +1.00, 4, 1, 0, , True
+      AutoLayout      =   DayPlanTable, 2, <Parent>, 2, False, +1.00, 4, 1, 0, , True
+      ControlCount    =   0
+      Enabled         =   True
+      Height          =   255
+      Left            =   0
+      LockedInPosition=   False
+      Scope           =   2
+      TintColor       =   &c000000
+      Top             =   312
+      Visible         =   True
+      Width           =   320
+   End
    Begin MobileToolbarButton NextMonthButton
       Caption         =   "Next"
       Enabled         =   True
@@ -81,7 +99,7 @@ Begin MobileScreen MainScreen Implements iOSMobileTableDataSourceReordering
       Enabled         =   True
       Height          =   22
       Icon            =   0
-      Left            =   63
+      Left            =   215
       LockedInPosition=   False
       Scope           =   2
       Top             =   534
@@ -97,23 +115,17 @@ Begin MobileScreen MainScreen Implements iOSMobileTableDataSourceReordering
       StackSize       =   0
       Type            =   0
    End
-   Begin DayPlanTableContainer DayPlanTable
-      AccessibilityHint=   ""
-      AccessibilityLabel=   ""
-      AutoLayout      =   DayPlanTable, 4, BottomLayoutGuide, 3, False, +1.00, 4, 1, 0, , True
-      AutoLayout      =   DayPlanTable, 8, <Parent>, 8, False, +0.45, 4, 1, 0, , True
-      AutoLayout      =   DayPlanTable, 1, <Parent>, 1, False, +1.00, 4, 1, 0, , True
-      AutoLayout      =   DayPlanTable, 2, <Parent>, 2, False, +1.00, 4, 1, 0, , True
-      ControlCount    =   0
+   Begin MobileToolbarButton FlexibleSpace1
+      Caption         =   "Untitled"
       Enabled         =   True
-      Height          =   255
-      Left            =   0
+      Height          =   22
+      Icon            =   0
+      Left            =   63
       LockedInPosition=   False
       Scope           =   2
-      TintColor       =   &c000000
-      Top             =   312
-      Visible         =   True
-      Width           =   320
+      Top             =   534
+      Type            =   5
+      Width           =   143.0
    End
 End
 #tag EndMobileScreen
@@ -490,6 +502,15 @@ End
 
 #tag EndWindowCode
 
+#tag Events DayPlanTable
+	#tag Event
+		Sub ReloadRequested()
+		  LoadPlans
+		  RegeneratePDF
+		  Calendar.Reload
+		End Sub
+	#tag EndEvent
+#tag EndEvents
 #tag Events Calendar
 	#tag Event
 		Sub DaySelected(date As DateTime)
@@ -518,15 +539,6 @@ End
 		    s.PDF = mPDFFile
 		    s.Show(Self)
 		  End If
-		End Sub
-	#tag EndEvent
-#tag EndEvents
-#tag Events DayPlanTable
-	#tag Event
-		Sub ReloadRequested()
-		  LoadPlans
-		  RegeneratePDF
-		  Calendar.Reload
 		End Sub
 	#tag EndEvent
 #tag EndEvents
