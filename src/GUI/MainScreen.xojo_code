@@ -285,25 +285,42 @@ End
 		    g.DrawText(currentDay.Day.ToString, x + 5, y + 5 + g.Font.Ascent)
 		    
 		    // Draw the daily plan
-		    g.Font = New Font("Helvetica", 10)
-		    g.DrawingColor = Color.Black
-		    If plan = Nil Then
-		      Continue
-		    End If
 		    
 		    Var lunchMeals() As String
 		    For Each lunch As Meal In plan.Lunch
 		      lunchMeals.Add(lunch.Name)
 		    Next
 		    Var mealsText As String = String.FromArray(lunchMeals, ", ")
-		    g.DrawText(mealsText, x + 5, y + 30, cellWidth - 10, False)
 		    
 		    Var dinnerMeals() As String
 		    For Each dinner As Meal In plan.Dinner
 		      dinnerMeals.Add(dinner.Name)
 		    Next
 		    Var dinnerText As String = String.FromArray(dinnerMeals, ", ")
+		    
+		    // We have to ensure the font will fit. If there is too much text, it can
+		    // cause some overlapping between the lunch and dinner.
+		    Var fontSize As Integer = 20
+		    Var itFits As Boolean = False
+		    While fontSize > 0 And Not itFits
+		      g.Font = New Font("Helvetica", fontSize)
+		      Var lunchHeight As Double = g.TextHeight(mealsText, cellWidth - 10)
+		      Var dinnerHeight As Double = g.TextHeight(dinnerText, cellWidth - 10)
+		      If lunchHeight + dinnerHeight < cellHeight - 30 Then
+		        itFits = True
+		      Else
+		        fontSize = fontSize - 1
+		      End If
+		    Wend
+		    
+		    g.DrawingColor = Color.Black
+		    If plan = Nil Then
+		      Continue
+		    End If
+		    
 		    Var dinnerHeight As Double = g.TextHeight(dinnerText, cellWidth - 10)
+		    
+		    g.DrawText(mealsText, x + 5, y + 30, cellWidth - 10, False)
 		    g.DrawText(dinnerText, x + 5, y + cellHeight - dinnerHeight, cellWidth - 10, False)
 		    
 		    // Increment day and week, if necessary
