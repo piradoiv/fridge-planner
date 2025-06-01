@@ -300,7 +300,7 @@ End
 		    
 		    // We have to ensure the font will fit. If there is too much text, it can
 		    // cause some overlapping between the lunch and dinner.
-		    Var fontSize As Integer = 20
+		    Var fontSize As Integer = 15
 		    Var itFits As Boolean = False
 		    While fontSize > 0 And Not itFits
 		      g.Font = New Font("Helvetica", fontSize)
