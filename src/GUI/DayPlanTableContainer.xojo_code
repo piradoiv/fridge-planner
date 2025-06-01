@@ -90,7 +90,7 @@ End
 		  Case 1
 		    Return If(Plan = Nil, 1, Plan.Dinner.Count + 1)
 		  Case 2
-		    Return 3
+		    Return 1
 		  End Select
 		End Function
 	#tag EndMethod
@@ -119,11 +119,7 @@ End
 		  Case 2
 		    Select Case row
 		    Case 0
-		      cell = table.CreateCell("Edit Notes", "", Nil, MobileTableCellData.AccessoryTypes.Disclosure)
-		    Case 1
 		      cell = table.CreateCell("Edit Style", "", Nil, MobileTableCellData.AccessoryTypes.Disclosure)
-		    Case 2
-		      cell = table.CreateCell("Swap meals with another day", "", Nil, MobileTableCellData.AccessoryTypes.Disclosure)
 		    End Select
 		  End Select
 		  
@@ -211,14 +207,10 @@ End
 		  Case 2
 		    Select Case row
 		    Case 0
-		      Break
-		    Case 1
 		      Var s As New DailyPlanStyleScreen
 		      AddHandler s.Closing, WeakAddressOf TriggerReload
 		      s.Plan = Plan
 		      s.Show(MobileScreen(App.CurrentLayout.Content))
-		    Case 2
-		      Break
 		    End Select
 		  End Select
 		End Sub
