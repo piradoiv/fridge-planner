@@ -3,7 +3,30 @@ Protected Class App
 Inherits MobileApplication
 	#tag CompatibilityFlags = TargetIOS
 	#tag Event
+		Sub LowMemoryWarning()
+		  //Add a breadcrumb for LowMemoryWarning
+		  
+		  Var message As String
+		  Var ObjectCount As Integer
+		  Var memoryUsed As Integer
+		  
+		  ObjectCount  = Runtime.ObjectCount
+		  MemoryUsed  = Round(Runtime.MemoryUsed / 10000) / 100
+		  
+		  message = "ObjectCount: " + ObjectCount.ToString + EndOfLine + _
+		  "MemoryUsed: " + memoryUsed.ToString + " MB"
+		  
+		  If App.Sentry <> Nil Then
+		    App.Sentry.AddBreadcrumb("info", CurrentMethodName, Xojo_Sentry.errorLevel.warning, _
+		    New Dictionary("ObjectCount": ObjectCount, "MemoryUsed": memoryUsed.ToString + " MB"))
+		  End If
+		End Sub
+	#tag EndEvent
+
+	#tag Event
 		Sub Opening()
+		  InitializeSentry
+		  
 		  MealsManager = New MealPlanManager
 		  
 		  #If DebugBuild
@@ -35,9 +58,74 @@ Inherits MobileApplication
 		End Sub
 	#tag EndEvent
 
+	#tag Event
+		Function UnhandledException(exc As RuntimeException) As Boolean
+		  #If DebugBuild
+		    Var reason As String
+		    reason = exc.Message
+		  #EndIf
+		  
+		  //Exception
+		  Try
+		    #If DebugBuild
+		      App.Sentry.SubmitException(exc, "", "", Xojo_Sentry.errorLevel.debug)
+		    #Else
+		      App.Sentry.SubmitException(exc, "", "", Xojo_Sentry.errorLevel.error)
+		    #EndIf
+		    
+		    //Make sure we do not create another exception by sending it to Sentry
+		  Catch err
+		    
+		  End Try
+		  
+		  MessageBox("A fatal error just happened, but the app will continue running. If the problem persists, contact support.")
+		  
+		  //Return true to let the app running
+		  Return True
+		End Function
+	#tag EndEvent
+
+
+	#tag Method, Flags = &h21
+		Private Sub InitializeSentry()
+		  Var DSN As String = "https://1b608ac1b69876e8978450d90b591290@o4509742417051648.ingest.de.sentry.io/4509742423605328"
+		  
+		  Self.Sentry = SentryController.GetInstance(DSN)
+		  Self.Sentry.SendOfflineExceptions //Send exceptions that were triggered when offline
+		  
+		  
+		  //If necessary, Sentry has a few options
+		  Self.Sentry.Options.app_name = "es.rcruz.fridgeplanner" //Your app's name
+		  
+		  'self.sentry.Options.get_battery_status = True //Only relevant on iOS
+		  Self.Sentry.Options.include_StackFrame_address = False
+		  Self.Sentry.Options.max_breadcrumbs = 100 //The maximum amount of breadcrumbs to keep
+		  Self.Sentry.Options.persistant_breadcrumbs = 10 //The maximum amount of persistant breadcrumbs to keep. Defaults to 10
+		  Self.Sentry.Options.sample_rate = 1.0 //Configures the sample rate for error events, in the range of 0.0 to 1.0. The default is 1.0 which means that 100% of error events are sent. If set to 0.1 only 10% of error events will be sent. Events are picked randomly.
+		  Self.Sentry.Options.save_before_sending = False //Saves the exception to disk before sending to Sentry. Set to True before sending an UnhandledException or when the app is about to crash
+		  Self.Sentry.Options.traces_sample_rate = 0.1 //Configures the sample rate for tracing events, in the range of 0.0 to 1.0. The default is 0.1 which means that 10% of traces events are sent. Traces are picked randomly.
+		  
+		  
+		  //If your app handles user authentication add the info to sentry
+		  
+		  // Var user As New Xojo_Sentry.SentryUser
+		  // user.email = "name@example.com"
+		  // user.language = "en" //The language the user is running the app in
+		  // user.locale = locale.Current
+		  // 'user.ip = "1.1.1.1" //Uncomment this if necessary. Default is "{{auto}}"
+		  // user.user_id = "1234" //The user's unique ID
+		  // 
+		  // Self.sentry.user = user
+		End Sub
+	#tag EndMethod
+
 
 	#tag Property, Flags = &h0
 		MealsManager As MealPlanManager
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private Sentry As SentryController
 	#tag EndProperty
 
 
