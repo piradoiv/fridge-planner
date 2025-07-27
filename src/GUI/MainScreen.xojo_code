@@ -1,5 +1,5 @@
 #tag MobileScreen
-Begin MobileScreen MainScreen Implements iOSMobileTableDataSourceReordering
+Begin MobileScreen MainScreen
    BackButtonCaption=   ""
    Compatibility   =   ""
    ControlCount    =   0
@@ -177,14 +177,6 @@ End
 		End Sub
 	#tag EndEvent
 
-
-	#tag Method, Flags = &h21
-		Private Function AllowRowMove(table As iOSMobileTable, section As Integer, row As Integer) As Boolean
-		  // Part of the iOSMobileTableDataSourceReordering interface.
-		  
-		  Return True
-		End Function
-	#tag EndMethod
 
 	#tag Method, Flags = &h21
 		Private Function GeneratePDF() As FolderItem
@@ -396,82 +388,6 @@ End
 		  mShouldShowPDF = False
 		  GeneratePDFThread.Start
 		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h21
-		Private Function RowCount(table As iOSMobileTable, section As Integer) As Integer
-		  // Part of the iOSMobileTableDataSource interface.
-		  
-		  Return App.MealsManager.MonthDayCount(App.MealsManager.Year, App.MealsManager.Month)
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h21
-		Private Function RowData(table As iOSMobileTable, section As Integer, row As Integer) As MobileTableCellData
-		  // Part of the iOSMobileTableDataSource interface.
-		  
-		  Var result As MobileTableCellData
-		  Var plan As DailyPlan
-		  For i As Integer = 0 To App.MealsManager.Plans.LastIndex
-		    If App.MealsManager.Plans(i).PlanDate.Day = row + 1 Then
-		      plan = App.MealsManager.Plans(i)
-		      Exit For i
-		    End If
-		  Next
-		  
-		  If plan = Nil Then
-		    Var day As New DateTime(App.MealsManager.Year, App.MealsManager.Month, row + 1)
-		    result = table.CreateCell("-", day.SQLDate, Nil, MobileTableCellData.AccessoryTypes.Disclosure)
-		    plan = New DailyPlan
-		    plan.PlanDate = day
-		  Else
-		    Var lunch() As String
-		    For Each meal As Meal In plan.Lunch
-		      lunch.Add(meal.Name)
-		    Next
-		    Var dinner() As String
-		    For Each meal As Meal In plan.Dinner
-		      dinner.Add(meal.Name)
-		    Next
-		    Var meals() As String
-		    If lunch.Count > 0 Then
-		      meals.Add("🍽️: " + String.FromArray(lunch, ", "))
-		    End If
-		    If dinner.Count > 0 Then
-		      meals.Add("🥡: " + String.FromArray(dinner, ", "))
-		    End If
-		    
-		    result = table.CreateCell(If(meals.Count > 0, String.FromArray(meals, " | "), "-"), plan.PlanDate.SQLDate + " " + plan.Notes, Nil, MobileTableCellData.AccessoryTypes.Disclosure)
-		  End If
-		  
-		  result.Tag = plan
-		  
-		  Return result
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h21
-		Private Sub RowMoved(table As iOSMobileTable, sourceSection As Integer, sourceRow As Integer, destSection As Integer, destRow As Integer)
-		  // Part of the iOSMobileTableDataSourceReordering interface.
-		  
-		  Break
-		End Sub
-	#tag EndMethod
-
-	#tag Method, Flags = &h21
-		Private Function SectionCount(table As iOSMobileTable) As Integer
-		  // Part of the iOSMobileTableDataSource interface.
-		  
-		  Return 1
-		End Function
-	#tag EndMethod
-
-	#tag Method, Flags = &h21
-		Private Function SectionTitle(table As iOSMobileTable, section As Integer) As String
-		  // Part of the iOSMobileTableDataSource interface.
-		  
-		  Return ""
-		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h21
