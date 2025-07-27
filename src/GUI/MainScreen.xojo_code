@@ -516,6 +516,11 @@ End
 		Sub DaySelected(date As DateTime)
 		  CurrentDate = New DateTime(date.Year, date.Month, 1)
 		  LoadPlans
+		  
+		  If CurrentDate <> Nil And CurrentDate.ToString("YYYY-MM") = date.ToString("YYYY-MM") Then
+		    Return
+		  End If
+		  
 		  RegeneratePDF
 		End Sub
 	#tag EndEvent

@@ -75,9 +75,9 @@ Protected Class MealPlanManager
 		  Static plansDate As String = ""
 		  Static plans() As DailyPlan
 		  
-		  If plansDate <> date.ToString("YYYY-MM") Then
-		    plansDate = date.ToString("YYYY-MM")
-		    plans = mDB.GetPlansForMonth(date.Year, date.Month)
+		  If plansDate <> date.SQLDate Then
+		    plansDate = date.SQLDate
+		    plans = mDB.GetPlansForMonth(date.Year, date.Month, date.Day)
 		  End If
 		  
 		  For Each plan As DailyPlan In plans

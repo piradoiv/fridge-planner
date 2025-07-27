@@ -150,14 +150,18 @@ Protected Class DatabaseManager
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function GetPlansForMonth(year As Integer, month As Integer) As DailyPlan()
+		Function GetPlansForMonth(year As Integer, month As Integer, day As Integer = -1) As DailyPlan()
 		  #If LogQueries
-		    System.DebugLog(CurrentMethodName + " year " + year.ToString + " month " + month.ToString)
+		    System.DebugLog(CurrentMethodName + " year " + year.ToString + " month " + month.ToString + " day " + day.ToString)
 		  #EndIf
 		  
 		  Var result() As DailyPlan
-		  Var startDate As String = year.ToString + "-" + month.ToString(Nil, "00") + "-01"
-		  Var endDate As String = year.ToString + "-" + month.ToString(Nil, "00") + "-31"
+		  
+		  Var firstDay As String = If(day > 0, day.ToString(Nil, "00"), "01")
+		  Var lastDay As String = If(day > 0, day.ToString(Nil, "00"), "31")
+		  
+		  Var startDate As String = year.ToString + "-" + month.ToString(Nil, "00") + "-" + firstDay
+		  Var endDate As String = year.ToString + "-" + month.ToString(Nil, "00") + "-" + lastDay
 		  Var rs As RowSet = DB.SelectSQL("SELECT * FROM plans WHERE plan_date BETWEEN ? AND ?", startDate, endDate)
 		  For Each planRow As DatabaseRow In rs
 		    Var plan As New DailyPlan
