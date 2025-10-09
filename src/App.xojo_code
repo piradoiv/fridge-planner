@@ -29,8 +29,8 @@ Inherits MobileApplication
 		  
 		  MealsManager = New MealPlanManager
 		  
-		  #If DebugBuild
-		    For i As Integer = 0 To 364
+		  #If False And DebugBuild
+		    For i As Integer = 0 To 10
 		      Var d As New DateTime(2025, 1, 1)
 		      d = d.AddInterval(0, 0, i)
 		      Var plan As DailyPlan = MealsManager.GetPlanForDate(d)

@@ -1,12 +1,15 @@
 #tag MobileScreen
 Begin MobileScreen AddMealScreen Implements iOSMobileTableDataSource
    BackButtonCaption=   ""
+   BackgroundColor =   
    Compatibility   =   ""
    ControlCount    =   0
    Device = 1
    HasNavigationBar=   True
    LargeTitleDisplayMode=   2
    Left            =   0
+   NavigationBarColor=   
+   NavigationBarTextColor=   
    Orientation = 0
    ScaleFactor     =   0.0
    TabBarVisible   =   True
@@ -14,9 +17,11 @@ Begin MobileScreen AddMealScreen Implements iOSMobileTableDataSource
    TintColor       =   &c000000
    Title           =   "Add meal"
    Top             =   0
+   _mTabBarVisible =   False
    Begin MobileLabel MealNameLabel
       AccessibilityHint=   ""
       AccessibilityLabel=   ""
+      AdjustTextSizeToFit=   False
       Alignment       =   0
       AutoLayout      =   MealNameLabel, 1, <Parent>, 1, False, +1.00, 4, 1, *kStdGapCtlToViewH, , True
       AutoLayout      =   MealNameLabel, 2, <Parent>, 2, False, +1.00, 4, 1, -*kStdGapCtlToViewH, , True
@@ -46,6 +51,7 @@ Begin MobileScreen AddMealScreen Implements iOSMobileTableDataSource
    Begin MobileTextField MealNameTextField
       AccessibilityHint=   ""
       AccessibilityLabel=   ""
+      AdjustTextSizeToFit=   False
       Alignment       =   0
       AllowAutoCorrection=   False
       AllowSpellChecking=   True
@@ -59,6 +65,7 @@ Begin MobileScreen AddMealScreen Implements iOSMobileTableDataSource
       Enabled         =   True
       Height          =   34
       Hint            =   ""
+      HintColor       =   
       InputType       =   0
       Left            =   20
       LockedInPosition=   False
@@ -113,6 +120,7 @@ Begin MobileScreen AddMealScreen Implements iOSMobileTableDataSource
       AutoLayout      =   SuggestionsTable, 1, <Parent>, 1, False, +1.00, 4, 1, 0, , True
       AutoLayout      =   SuggestionsTable, 2, <Parent>, 2, False, +1.00, 4, 1, -0, , True
       AutoLayout      =   SuggestionsTable, 3, MealNameTextField, 4, False, +1.00, 4, 1, *kStdControlGapV, , True
+      backgroundColor =   
       ControlCount    =   0
       EditingEnabled  =   False
       EditingEnabled  =   False
@@ -123,7 +131,10 @@ Begin MobileScreen AddMealScreen Implements iOSMobileTableDataSource
       Left            =   0
       LockedInPosition=   False
       Scope           =   2
+      SectionBackgroundColor=   
       SectionCount    =   0
+      SectionTextColor=   
+      SelectedRowColor=   
       TintColor       =   &c000000
       Top             =   145
       Visible         =   True
@@ -156,6 +167,14 @@ End
 		End Sub
 	#tag EndEvent
 
+
+	#tag Method, Flags = &h21
+		Private Function IndexTitles(table As iOSMobileTable) As String()
+		  Var empty() As String
+		  
+		  Return empty
+		End Function
+	#tag EndMethod
 
 	#tag Method, Flags = &h21
 		Private Sub Reload()
@@ -200,6 +219,12 @@ End
 		  // Part of the iOSMobileTableDataSource interface.
 		  
 		  Return 1
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Function SectionForIndexTitle(table As iOSMobileTable, title As String) As Integer
+		  Return 0
 		End Function
 	#tag EndMethod
 
@@ -264,6 +289,38 @@ End
 	#tag EndEvent
 #tag EndEvents
 #tag ViewBehavior
+	#tag ViewProperty
+		Name="_mTabBarVisible"
+		Visible=false
+		Group="Behavior"
+		InitialValue=""
+		Type="Boolean"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="BackgroundColor"
+		Visible=false
+		Group="Behavior"
+		InitialValue=""
+		Type="ColorGroup"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="NavigationBarColor"
+		Visible=false
+		Group="Behavior"
+		InitialValue=""
+		Type="ColorGroup"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="NavigationBarTextColor"
+		Visible=false
+		Group="Behavior"
+		InitialValue=""
+		Type="ColorGroup"
+		EditorType=""
+	#tag EndViewProperty
 	#tag ViewProperty
 		Name="Index"
 		Visible=true

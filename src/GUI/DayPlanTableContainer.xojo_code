@@ -19,6 +19,7 @@ Begin MobileContainer DayPlanTableContainer Implements iOSMobileTableDataSourceE
       AutoLayout      =   DayPlanTable, 1, <Parent>, 1, False, +1.00, 4, 1, 0, , True
       AutoLayout      =   DayPlanTable, 2, <Parent>, 2, False, +1.00, 4, 1, 0, , True
       AutoLayout      =   DayPlanTable, 3, <Parent>, 3, False, +1.00, 4, 1, 0, , True
+      backgroundColor =   
       ControlCount    =   0
       EditingEnabled  =   False
       EditingEnabled  =   False
@@ -29,7 +30,10 @@ Begin MobileContainer DayPlanTableContainer Implements iOSMobileTableDataSourceE
       Left            =   0
       LockedInPosition=   False
       Scope           =   2
+      SectionBackgroundColor=   
       SectionCount    =   0
+      SectionTextColor=   
+      SelectedRowColor=   
       TintColor       =   &c000000
       Top             =   0
       Visible         =   True
@@ -71,6 +75,14 @@ End
 		  Case 2
 		    Return row = 0
 		  End Select
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Function IndexTitles(table As iOSMobileTable) As String()
+		  Var empty() As String
+		  
+		  Return empty
 		End Function
 	#tag EndMethod
 
@@ -149,6 +161,12 @@ End
 		  // Part of the iOSMobileTableDataSource interface.
 		  
 		  Return 3
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Function SectionForIndexTitle(table As iOSMobileTable, title As String) As Integer
+		  Return 0
 		End Function
 	#tag EndMethod
 
