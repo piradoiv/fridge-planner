@@ -46,7 +46,7 @@ DefaultTabletLayout=iPadLayout
 MajorVersion=1
 MinorVersion=0
 SubVersion=0
-NonRelease=11
+NonRelease=13
 Release=0
 InfoVersion=
 LongVersion=
@@ -87,3 +87,4 @@ WindowsRunAs=0
 MacOSMinimumVersion=
 PlistEntries={"root":"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">\n<plist version=\"1.0\">\n<dict>\n\t<key>ITSAppUsesNonExemptEncryption</key>\n\t<false/>\n</dict>\n</plist>"}
 iOSMinimumVersion=
+iOSUICompatibilityMode=False

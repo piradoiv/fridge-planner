@@ -120,7 +120,7 @@ Begin MobileScreen AddMealScreen Implements iOSMobileTableDataSource
       AutoLayout      =   SuggestionsTable, 1, <Parent>, 1, False, +1.00, 4, 1, 0, , True
       AutoLayout      =   SuggestionsTable, 2, <Parent>, 2, False, +1.00, 4, 1, -0, , True
       AutoLayout      =   SuggestionsTable, 3, MealNameTextField, 4, False, +1.00, 4, 1, *kStdControlGapV, , True
-      backgroundColor =   
+      BackgroundColor =   
       ControlCount    =   0
       EditingEnabled  =   False
       EditingEnabled  =   False
