@@ -1,12 +1,15 @@
 #tag MobileScreen
 Begin MobileScreen DailyPlanStyleScreen
    BackButtonCaption=   ""
+   BackgroundColor =   
    Compatibility   =   ""
    ControlCount    =   0
    Device = 1
    HasNavigationBar=   True
    LargeTitleDisplayMode=   2
    Left            =   0
+   NavigationBarColor=   
+   NavigationBarTextColor=   
    Orientation = 0
    ScaleFactor     =   0.0
    TabBarVisible   =   True
@@ -14,9 +17,11 @@ Begin MobileScreen DailyPlanStyleScreen
    TintColor       =   &c000000
    Title           =   "Style"
    Top             =   0
+   _mTabBarVisible =   False
    Begin MobileLabel BorderSizeLabel
       AccessibilityHint=   ""
       AccessibilityLabel=   ""
+      AdjustTextSizeToFit=   False
       Alignment       =   2
       AutoLayout      =   BorderSizeLabel, 4, BorderSizeTextField, 4, False, +1.00, 4, 1, 0, , True
       AutoLayout      =   BorderSizeLabel, 1, <Parent>, 1, False, +1.00, 4, 1, *kStdGapCtlToViewH, , True
@@ -46,6 +51,7 @@ Begin MobileScreen DailyPlanStyleScreen
    Begin MobileTextField BorderSizeTextField
       AccessibilityHint=   ""
       AccessibilityLabel=   ""
+      AdjustTextSizeToFit=   False
       Alignment       =   0
       AllowAutoCorrection=   False
       AllowSpellChecking=   False
@@ -59,6 +65,7 @@ Begin MobileScreen DailyPlanStyleScreen
       Enabled         =   True
       Height          =   34
       Hint            =   ""
+      HintColor       =   
       InputType       =   0
       Left            =   148
       LockedInPosition=   False
@@ -83,6 +90,7 @@ Begin MobileScreen DailyPlanStyleScreen
    Begin MobileLabel BackgroundLabel
       AccessibilityHint=   ""
       AccessibilityLabel=   ""
+      AdjustTextSizeToFit=   False
       Alignment       =   2
       AutoLayout      =   BackgroundLabel, 8, , 0, False, +1.00, 4, 1, 34, , True
       AutoLayout      =   BackgroundLabel, 1, BorderSizeLabel, 1, False, +1.00, 4, 1, 0, , True
@@ -135,6 +143,7 @@ Begin MobileScreen DailyPlanStyleScreen
    Begin MobileTextField BackgroundTextField
       AccessibilityHint=   ""
       AccessibilityLabel=   ""
+      AdjustTextSizeToFit=   False
       Alignment       =   0
       AllowAutoCorrection=   False
       AllowSpellChecking=   False
@@ -148,6 +157,7 @@ Begin MobileScreen DailyPlanStyleScreen
       Enabled         =   True
       Height          =   34
       Hint            =   ""
+      HintColor       =   
       InputType       =   0
       Left            =   190
       LockedInPosition=   False
@@ -252,7 +262,15 @@ End
 #tag Events BackgroundTextField
 	#tag Event
 		Sub FocusReceived()
-		  Var c As Color = Color.FromString(Me.Text.Replace("&hFF", "&h00").Replace("#", "&h00"))
+		  Var c As Color = &c000000
+		  
+		  Try
+		    c = Color.FromString(Me.Text.Replace("&hFF", "&h00").Replace("#", "&h00"))
+		  Catch ex As RuntimeException
+		    // Ignore
+		  End Try
+		  
+		  BackgroundTextField.ClearFocus
 		  Picker.Show(c, "Background Color", Self, Me)
 		End Sub
 	#tag EndEvent
@@ -270,6 +288,38 @@ End
 	#tag EndEvent
 #tag EndEvents
 #tag ViewBehavior
+	#tag ViewProperty
+		Name="_mTabBarVisible"
+		Visible=false
+		Group="Behavior"
+		InitialValue=""
+		Type="Boolean"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="BackgroundColor"
+		Visible=false
+		Group="Behavior"
+		InitialValue=""
+		Type="ColorGroup"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="NavigationBarColor"
+		Visible=false
+		Group="Behavior"
+		InitialValue=""
+		Type="ColorGroup"
+		EditorType=""
+	#tag EndViewProperty
+	#tag ViewProperty
+		Name="NavigationBarTextColor"
+		Visible=false
+		Group="Behavior"
+		InitialValue=""
+		Type="ColorGroup"
+		EditorType=""
+	#tag EndViewProperty
 	#tag ViewProperty
 		Name="Index"
 		Visible=true
