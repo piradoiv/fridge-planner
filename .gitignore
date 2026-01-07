@@ -5,3 +5,4 @@
 src/Packaging.log
 src/DistributionSummary.plist
 src/ExportOptions.plist
+**/*.ipa
