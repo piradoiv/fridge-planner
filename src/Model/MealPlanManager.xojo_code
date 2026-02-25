@@ -1,9 +1,35 @@
 #tag Class
 Protected Class MealPlanManager
 	#tag Method, Flags = &h0
+		Sub ConfigureSync(webAuthToken As String)
+		  mSyncManager = New CloudKitSyncManager(mDB, webAuthToken)
+		  mSyncManager.SyncAll
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub Constructor()
 		  mDB = New DatabaseManager
 		  mDB.Connect
+		  CurrentMealPlan = mDB.GetActiveMealPlan
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function CreateMealPlan(name As String) As MealPlan
+		  Var mp As New MealPlan(name)
+		  mDB.InsertMealPlan(mp)
+		  If mSyncManager <> Nil Then mSyncManager.SyncAll
+		  Return mp
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub DeleteMealPlan(plan As MealPlan)
+		  mDB.DeleteMealPlan(plan.ID)
+		  If CurrentMealPlan <> Nil And CurrentMealPlan.ID = plan.ID Then
+		    CurrentMealPlan = mDB.GetActiveMealPlan
+		  End If
 		End Sub
 	#tag EndMethod
 
@@ -16,16 +42,23 @@ Protected Class MealPlanManager
 	#tag Method, Flags = &h0
 		Sub DuplicatePreviousMonth(year As Integer, month As Integer)
 		  Var prevMonth As New DateTime(year, month - 1, 1)
-		  Var prevPlans() As DailyPlan = mDB.GetPlansForMonth(prevMonth.Year, prevMonth.Month)
+		  Var prevPlans() As DailyPlan = mDB.GetPlansForMonth(prevMonth.Year, prevMonth.Month, -1, CurrentMealPlan.ID)
 		  For Each plan As DailyPlan In prevPlans
 		    Var newPlan As New DailyPlan
 		    newPlan.PlanDate = New DateTime(year, month, plan.PlanDate.Day)
 		    newPlan.Lunch = plan.Lunch
 		    newPlan.Dinner = plan.Dinner
 		    newPlan.Notes = plan.Notes
+		    newPlan.MealPlanID = CurrentMealPlan.ID
 		    SavePlan(newPlan)
 		  Next
 		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function GetAllMealPlans() As MealPlan()
+		  Return mDB.GetAllMealPlans
+		End Function
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
@@ -77,7 +110,7 @@ Protected Class MealPlanManager
 		  
 		  If plansDate <> date.SQLDate Then
 		    plansDate = date.SQLDate
-		    plans = mDB.GetPlansForMonth(date.Year, date.Month, date.Day)
+		    plans = mDB.GetPlansForMonth(date.Year, date.Month, date.Day, CurrentMealPlan.ID)
 		  End If
 		  
 		  For Each plan As DailyPlan In plans
@@ -88,6 +121,7 @@ Protected Class MealPlanManager
 		  
 		  Var newPlan As New DailyPlan
 		  newPlan.PlanDate = date
+		  newPlan.MealPlanID = CurrentMealPlan.ID
 		  Return newPlan
 		End Function
 	#tag EndMethod
@@ -102,7 +136,7 @@ Protected Class MealPlanManager
 		Sub LoadPlansForMonth(year As Integer, month As Integer)
 		  Self.Year = year
 		  Self.Month = month
-		  Plans = mDB.GetPlansForMonth(year, month)
+		  Plans = mDB.GetPlansForMonth(year, month, -1, CurrentMealPlan.ID)
 		End Sub
 	#tag EndMethod
 
@@ -142,10 +176,22 @@ Protected Class MealPlanManager
 		  Next
 		  
 		  If plan.ID = 0 Then
+		    If plan.MealPlanID = 0 Then
+		      plan.MealPlanID = CurrentMealPlan.ID
+		    End If
 		    mDB.InsertPlan(plan)
 		  Else
 		    mDB.UpdatePlan(plan)
 		  End If
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub SetActiveMealPlan(plan As MealPlan)
+		  mDB.SetActiveMealPlan(plan.ID)
+		  CurrentMealPlan = plan
+		  CurrentMealPlan.IsActive = True
+		  If mSyncManager <> Nil Then mSyncManager.SyncAll
 		End Sub
 	#tag EndMethod
 
@@ -174,6 +220,10 @@ Protected Class MealPlanManager
 	#tag EndMethod
 
 
+	#tag Property, Flags = &h0
+		CurrentMealPlan As MealPlan
+	#tag EndProperty
+
 	#tag Property, Flags = &h21
 		Private mDB As DatabaseManager
 	#tag EndProperty
@@ -184,6 +234,10 @@ Protected Class MealPlanManager
 
 	#tag Property, Flags = &h0
 		Month As Integer
+	#tag EndProperty
+
+	#tag Property, Flags = &h21
+		Private mSyncManager As CloudKitSyncManager
 	#tag EndProperty
 
 	#tag Property, Flags = &h0

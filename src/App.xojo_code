@@ -29,6 +29,23 @@ Inherits MobileApplication
 		  
 		  MealsManager = New MealPlanManager
 		  
+		  // CloudKit sync: try to use a cached token first, then fetch a fresh one.
+		  #If TargetIOS
+		    Var ckManager As New CloudKit.Manager
+		    If ckManager.IsAvailable Then
+		      Var storedToken As String = LoadCloudKitToken
+		      If storedToken <> "" Then
+		        MealsManager.ConfigureSync(storedToken)
+		      Else
+		        // No cached token — fetch one using the CloudKit Dashboard API key.
+		        // Generate your key at icloud.developer.apple.com → API Access → Server-to-Server Keys
+		        AddHandler ckManager.WebAuthTokenFetched, AddressOf HandleWebAuthTokenFetched
+		        AddHandler ckManager.CloudKitError, AddressOf HandleCloudKitTokenError
+		        ckManager.FetchWebAuthToken(kCloudKitAPIKey)
+		      End If
+		    End If
+		  #EndIf
+		  
 		  #If False And DebugBuild
 		    For i As Integer = 0 To 10
 		      Var d As New DateTime(2025, 1, 1)
@@ -87,6 +104,23 @@ Inherits MobileApplication
 
 
 	#tag Method, Flags = &h21
+		Private Sub HandleCloudKitTokenError(sender As CloudKit.Manager, error As CloudKit.CKError)
+		  // Token fetch failed — sync will not be available this session.
+		  // This is non-fatal: the app works fully offline.
+		  #If DebugBuild
+		    System.DebugLog("CloudKit token error " + error.Code.ToString + ": " + error.Message)
+		  #EndIf
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub HandleWebAuthTokenFetched(sender As CloudKit.Manager, token As String)
+		  SaveCloudKitToken(token)
+		  MealsManager.ConfigureSync(token)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
 		Private Sub InitializeSentry()
 		  Var DSN As String = "https://1b608ac1b69876e8978450d90b591290@o4509742417051648.ingest.de.sentry.io/4509742423605328"
 		  
@@ -119,6 +153,36 @@ Inherits MobileApplication
 		End Sub
 	#tag EndMethod
 
+	#tag Method, Flags = &h21
+		Private Function LoadCloudKitToken() As String
+		  #If TargetIOS
+		    Declare Function NSClassFromString Lib "Foundation" (name As CFStringRef) As Ptr
+		    Declare Function standardUserDefaults Lib "Foundation" Selector "standardUserDefaults" (cls As Ptr) As Ptr
+		    Declare Function stringForKey Lib "Foundation" Selector "stringForKey:" (obj As Ptr, key As CFStringRef) As CFStringRef
+		    
+		    Var cls As Ptr = NSClassFromString("NSUserDefaults")
+		    Var defaults As Ptr = standardUserDefaults(cls)
+		    Return stringForKey(defaults, "cloudkit_web_auth_token")
+		  #Else
+		    Return ""
+		  #EndIf
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub SaveCloudKitToken(token As String)
+		  #If TargetIOS
+		    Declare Function NSClassFromString Lib "Foundation" (name As CFStringRef) As Ptr
+		    Declare Function standardUserDefaults Lib "Foundation" Selector "standardUserDefaults" (cls As Ptr) As Ptr
+		    Declare Sub setObjectForKey Lib "Foundation" Selector "setObject:forKey:" (obj As Ptr, value As CFStringRef, key As CFStringRef)
+		    
+		    Var cls As Ptr = NSClassFromString("NSUserDefaults")
+		    Var defaults As Ptr = standardUserDefaults(cls)
+		    setObjectForKey(defaults, token, "cloudkit_web_auth_token")
+		  #EndIf
+		End Sub
+	#tag EndMethod
+
 
 	#tag Property, Flags = &h0
 		MealsManager As MealPlanManager
@@ -128,6 +192,9 @@ Inherits MobileApplication
 		Private Sentry As SentryController
 	#tag EndProperty
 
+
+	#tag Constant, Name = kCloudKitAPIKey, Type = String, Dynamic = False, Default = \"YOUR_CLOUDKIT_API_KEY_HERE", Scope = Public
+	#tag EndConstant
 
 	#tag Constant, Name = kDinnerMeals, Type = Text, Dynamic = False, Default = \"Grilled Salmon with Asparagus\nBeef Stroganoff\nChicken Parmesan\nLasagna\nGrilled Ribeye Steak\nShrimp Scampi\nRoast Chicken with Vegetables\nSpaghetti Carbonara\nLamb Chops with Mint Sauce\nFish and Chips\nChicken Marsala\nBeef Wellington\nLobster Thermidor\nPork Tenderloin with Apple Stuffing\nChicken Tikka Masala\nSeafood Paella\nPrime Rib with Yorkshire Pudding\nDuck Confit\nOsso Buco\nGrilled Swordfish\nChicken Cacciatore\nBeef Bourguignon\nStuffed Bell Peppers\nRack of Lamb\nCioppino\nChicken Cordon Bleu\nFilet Mignon\nPaella Valenciana\nMoroccan Tagine\nGrilled Halibut\nChicken Piccata\nBraised Short Ribs\nStuffed Pork Chops\nSeafood Risotto\nCoq au Vin\nNew York Strip Steak\nChilean Sea Bass\nChicken Enchiladas\nBeef Tenderloin\nPan-Seared Scallops\nChicken Fajitas\nVeal Scallopini\nGrilled Portobello Mushrooms\nSalmon Wellington\nChicken Teriyaki\nBraised Lamb Shanks\nStuffed Salmon\nBeef Medallions\nLobster Ravioli\nGrilled Chicken Breast\nPork Chops with Sage\nSeafood Linguine\nChicken Satay\nBeef Brisket\nPan-Fried Trout\nChicken Roulade\nGrilled Lamb Kebabs\nStuffed Eggplant\nSalmon Teriyaki\nBeef Fajitas\nLobster Bisque with Crab Cakes\nChicken Shawarma\nPork Belly with Asian Glaze\nSeafood Bouillabaisse\nGrilled Tuna Steaks\nChicken Pad Thai\nBeef Tacos\nPan-Seared Duck Breast\nStuffed Zucchini\nGrilled Mahi Mahi\nChicken Biryani\nLamb Curry\nSeafood Alfredo\nBeef Kabobs\nHoney Glazed Ham\nChicken Stir Fry\nGrilled Salmon Cedar Plank\nPork Schnitzel\nSeafood Gumbo\nBeef Pot Roast\nChicken Marsala\nGrilled Red Snapper\nLamb Gyros\nSeafood Chowder\nBeef Chili\nChicken Tikka\nGrilled Octopus\nPork Carnitas\nSeafood Pasta\nBeef Stir Fry\nChicken Shawarma Plate\nGrilled Branzino\nLamb Souvlaki\nSeafood Cioppino\nBeef Bulgogi\nChicken Pad See Ew\nGrilled Grouper\nPork Adobo\nSeafood Jambalaya\nBeef Rendang\nChicken Cacciatore\nGrilled Snapper\nLamb Tagine\nSeafood Boil\nBeef Teriyaki\nChicken Vindaloo\nPan-Seared Cod\nPork Sisig\nSeafood Curry", Scope = Private
 	#tag EndConstant

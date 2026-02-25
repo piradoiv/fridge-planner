@@ -75,6 +75,52 @@ Protected Class DatabaseManager
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub DeleteMealPlan(mealPlanID As Integer)
+		  Var planIDs() As Integer
+		  Var rs As RowSet = DB.SelectSQL("SELECT id FROM plans WHERE meal_plan_id = ?", mealPlanID)
+		  For Each row As DatabaseRow In rs
+		    planIDs.Add(row.Column("id").IntegerValue)
+		  Next
+		  For Each pid As Integer In planIDs
+		    DB.ExecuteSQL("DELETE FROM plans_meals WHERE plan_id = ?", pid)
+		  Next
+		  DB.ExecuteSQL("DELETE FROM plans WHERE meal_plan_id = ?", mealPlanID)
+		  DB.ExecuteSQL("DELETE FROM meal_plans WHERE id = ?", mealPlanID)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function GetActiveMealPlan() As MealPlan
+		  Var rs As RowSet = DB.SelectSQL("SELECT * FROM meal_plans WHERE is_active = 1 LIMIT 1")
+		  For Each row As DatabaseRow In rs
+		    Var mp As New MealPlan
+		    mp.ID = row.Column("id").IntegerValue
+		    mp.UUID = row.Column("uuid").StringValue
+		    mp.Name = row.Column("name").StringValue
+		    mp.IsActive = True
+		    Return mp
+		  Next
+		  Return Nil
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function GetAllMealPlans() As MealPlan()
+		  Var result() As MealPlan
+		  Var rs As RowSet = DB.SelectSQL("SELECT * FROM meal_plans ORDER BY name")
+		  For Each row As DatabaseRow In rs
+		    Var mp As New MealPlan
+		    mp.ID = row.Column("id").IntegerValue
+		    mp.UUID = row.Column("uuid").StringValue
+		    mp.Name = row.Column("name").StringValue
+		    mp.IsActive = row.Column("is_active").BooleanValue
+		    result.Add(mp)
+		  Next
+		  Return result
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Function GetAllMeals() As Meal()
 		  #If LogQueries
 		    System.DebugLog(CurrentMethodName)
@@ -150,7 +196,7 @@ Protected Class DatabaseManager
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
-		Function GetPlansForMonth(year As Integer, month As Integer, day As Integer = -1) As DailyPlan()
+		Function GetPlansForMonth(year As Integer, month As Integer, day As Integer = -1, mealPlanID As Integer = 0) As DailyPlan()
 		  #If LogQueries
 		    System.DebugLog(CurrentMethodName + " year " + year.ToString + " month " + month.ToString + " day " + day.ToString)
 		  #EndIf
@@ -162,12 +208,22 @@ Protected Class DatabaseManager
 		  
 		  Var startDate As String = year.ToString + "-" + month.ToString(Nil, "00") + "-" + firstDay
 		  Var endDate As String = year.ToString + "-" + month.ToString(Nil, "00") + "-" + lastDay
-		  Var rs As RowSet = DB.SelectSQL("SELECT * FROM plans WHERE plan_date BETWEEN ? AND ?", startDate, endDate)
+		  
+		  Var sql As String = "SELECT * FROM plans WHERE plan_date BETWEEN ? AND ?"
+		  Var rs As RowSet
+		  If mealPlanID > 0 Then
+		    sql = sql + " AND meal_plan_id = ?"
+		    rs = DB.SelectSQL(sql, startDate, endDate, mealPlanID)
+		  Else
+		    rs = DB.SelectSQL(sql, startDate, endDate)
+		  End If
+		  
 		  For Each planRow As DatabaseRow In rs
 		    Var plan As New DailyPlan
 		    plan.ID = planRow.Column("id").IntegerValue
 		    plan.PlanDate = DateTime.FromString(planRow.Column("plan_date").StringValue)
 		    plan.Notes = planRow.Column("notes").StringValue
+		    plan.MealPlanID = planRow.Column("meal_plan_id").IntegerValue
 		    Var c As String = planRow.Column("background_color").StringValue
 		    If c = "FFFFFF" Then
 		      plan.BackgroundColor = Color.White
@@ -192,6 +248,39 @@ Protected Class DatabaseManager
 		    
 		    result.Add(plan)
 		  Next
+		  Return result
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function GetSyncMetadata(mealPlanUUID As String) As Dictionary
+		  Var result As New Dictionary
+		  Var rows As RowSet = DB.SelectSQL("SELECT cloudkit_record_id, last_synced_at FROM sync_metadata WHERE meal_plan_uuid = ?", mealPlanUUID)
+		  If rows <> Nil And Not rows.AfterLastRow Then
+		    result.Value("cloudkit_record_id") = rows.Column("cloudkit_record_id").StringValue
+		    result.Value("last_synced_at") = rows.Column("last_synced_at").StringValue
+		  End If
+		  Return result
+		End Function
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Function GetUnsyncedMealPlans() As MealPlan()
+		  Var result() As MealPlan
+		  Var rows As RowSet = DB.SelectSQL("SELECT mp.id, mp.uuid, mp.name, mp.is_active, mp.created_at, mp.modified_at " + _
+		  "FROM meal_plans mp LEFT JOIN sync_metadata sm ON mp.uuid = sm.meal_plan_uuid " + _
+		  "WHERE sm.meal_plan_uuid IS NULL OR mp.modified_at > sm.last_synced_at " + _
+		  "ORDER BY mp.created_at ASC")
+		  If rows = Nil Then Return result
+		  While Not rows.AfterLastRow
+		    Var plan As New MealPlan
+		    plan.ID = rows.Column("id").IntegerValue
+		    plan.UUID = rows.Column("uuid").StringValue
+		    plan.Name = rows.Column("name").StringValue
+		    plan.IsActive = rows.Column("is_active").IntegerValue = 1
+		    result.Add(plan)
+		    rows.MoveToNextRow
+		  Wend
 		  Return result
 		End Function
 	#tag EndMethod
@@ -222,13 +311,22 @@ Protected Class DatabaseManager
 	#tag EndMethod
 
 	#tag Method, Flags = &h0
+		Sub InsertMealPlan(mealPlan As MealPlan)
+		  DB.ExecuteSQL("INSERT INTO meal_plans (uuid, name, is_active, created_at, modified_at) VALUES (?, ?, ?, ?, ?)", _
+		  mealPlan.UUID, mealPlan.Name, If(mealPlan.IsActive, 1, 0), _
+		  mealPlan.CreatedAt.SQLDateTime, mealPlan.ModifiedAt.SQLDateTime)
+		  mealPlan.ID = DB.LastRowID
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
 		Sub InsertPlan(plan As DailyPlan)
 		  #If LogQueries
 		    System.DebugLog(CurrentMethodName + " date " + plan.PlanDate.SQLDate)
 		  #EndIf
 		  
-		  Const SQL = "INSERT INTO plans (plan_date, notes, background_color, border_size) VALUES (?, ?, ?, ?)"
-		  DB.ExecuteSQL(SQL, plan.PlanDate.SQLDate, plan.Notes, plan.BackgroundColor.ToString.Replace("&h00", ""), plan.BorderSize)
+		  Const SQL = "INSERT INTO plans (plan_date, notes, background_color, border_size, meal_plan_id) VALUES (?, ?, ?, ?, ?)"
+		  DB.ExecuteSQL(SQL, plan.PlanDate.SQLDate, plan.Notes, plan.BackgroundColor.ToString.Replace("&h00", ""), plan.BorderSize, plan.MealPlanID)
 		  plan.ID = DB.LastRowID
 		  
 		  UpdatePlanMeals(plan)
@@ -282,11 +380,57 @@ Protected Class DatabaseManager
 		  migrations.Add(String.FromArray(migration, ";"))
 		  migration.RemoveAll
 		  
+		  // Add meal_plans table, meal_plan_id to plans, seed default plan
+		  migration.Add("CREATE TABLE meal_plans (id INTEGER PRIMARY KEY AUTOINCREMENT, uuid TEXT UNIQUE NOT NULL, name TEXT NOT NULL, is_active INTEGER DEFAULT 0, created_at TEXT NOT NULL, modified_at TEXT NOT NULL)")
+		  migration.Add("CREATE INDEX idx_meal_plans_uuid ON meal_plans (uuid)")
+		  migration.Add("ALTER TABLE plans ADD COLUMN meal_plan_id INTEGER")
+		  migration.Add("CREATE INDEX idx_meal_plan_id ON plans (meal_plan_id)")
+		  migration.Add("INSERT INTO meal_plans (uuid, name, is_active, created_at, modified_at) VALUES (" + _
+		  "lower(hex(randomblob(4))) || '-' || lower(hex(randomblob(2))) || '-4' || " + _
+		  "substr(lower(hex(randomblob(2))),2) || '-' || " + _
+		  "substr('89ab', abs(random()) % 4 + 1, 1) || " + _
+		  "substr(lower(hex(randomblob(2))),2) || '-' || " + _
+		  "lower(hex(randomblob(6))), " + _
+		  "'My Meal Plan', 1, datetime('now'), datetime('now'))")
+		  migration.Add("UPDATE plans SET meal_plan_id = (SELECT id FROM meal_plans WHERE is_active = 1)")
+		  
+		  migrations.Add(String.FromArray(migration, ";"))
+		  migration.RemoveAll
+		  
+		  // Add sync_metadata table for CloudKit sync state
+		  migration.Add("CREATE TABLE sync_metadata (meal_plan_uuid TEXT PRIMARY KEY, cloudkit_record_id TEXT, last_synced_at TEXT)")
+		  
+		  migrations.Add(String.FromArray(migration, ";"))
+		  migration.RemoveAll
+		  
 		  For i As Integer = GetLastMigrationIndex To migrations.LastIndex - 1
 		    DB.ExecuteSQL(migrations(i + 1))
 		    DB.ExecuteSQL("DELETE FROM migrations")
 		    DB.ExecuteSQL("INSERT INTO migrations (version) VALUES (?)", i + 1)
 		  Next
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub SaveSyncMetadata(mealPlanUUID As String, cloudkitRecordID As String)
+		  DB.ExecuteSQL("INSERT INTO sync_metadata (meal_plan_uuid, cloudkit_record_id, last_synced_at) VALUES (?, ?, datetime('now')) " + _
+		  "ON CONFLICT(meal_plan_uuid) DO UPDATE SET cloudkit_record_id = excluded.cloudkit_record_id, last_synced_at = excluded.last_synced_at", _
+		  mealPlanUUID, cloudkitRecordID)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub SetActiveMealPlan(mealPlanID As Integer)
+		  DB.ExecuteSQL("UPDATE meal_plans SET is_active = 0")
+		  DB.ExecuteSQL("UPDATE meal_plans SET is_active = 1 WHERE id = ?", mealPlanID)
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h0
+		Sub UpdateMealPlan(mealPlan As MealPlan)
+		  mealPlan.ModifiedAt = DateTime.Now
+		  DB.ExecuteSQL("UPDATE meal_plans SET name = ?, is_active = ?, modified_at = ? WHERE id = ?", _
+		  mealPlan.Name, If(mealPlan.IsActive, 1, 0), mealPlan.ModifiedAt.SQLDateTime, mealPlan.ID)
 		End Sub
 	#tag EndMethod
 

@@ -98,6 +98,18 @@ Begin MobileScreen MainScreen
       Type            =   1001
       Width           =   46.0
    End
+   Begin MobileToolbarButton PlansButton
+      Caption         =   "Plans"
+      Enabled         =   True
+      Height          =   22
+      Icon            =   0
+      Left            =   62
+      LockedInPosition=   False
+      Scope           =   2
+      Top             =   534
+      Type            =   1001
+      Width           =   44.0
+   End
    Begin MobileToolbarButton GeneratePDFButton
       Caption         =   "Generate PDF"
       Enabled         =   True
@@ -140,15 +152,16 @@ End
 		  Var now As DateTime = DateTime.Now
 		  CurrentDate = now
 		  CurrentDate = CurrentDate.SubtractInterval(0, 0, CurrentDate.Day - 1)
-		  
+
 		  Calendar.SelectedDate = now
-		  
+
 		  LoadPlans
-		  
+
 		  PreviousMonthButton.Tag = "back"
 		  NextMonthButton.Tag = "forward"
 		  TodayButton.Tag = "today"
 		  GeneratePDFButton.Tag = "pdf"
+		  PlansButton.Tag = "plans"
 		End Sub
 	#tag EndEvent
 
@@ -175,8 +188,12 @@ End
 		    CurrentDate = New DateTime(now.Year, now.Month, 1)
 		    Calendar.SelectedDate = now
 		    LoadPlans
+		  Case "plans"
+		    Var plansScreen As New MealPlansScreen
+		    AddHandler plansScreen.PlansChanged, WeakAddressOf PlansChangedHandler
+		    plansScreen.Show(Self)
 		  End Select
-		  
+
 		  LoadPlans
 		End Sub
 	#tag EndEvent
@@ -374,11 +391,22 @@ End
 
 	#tag Method, Flags = &h21
 		Private Sub LoadPlans()
-		  Self.Title = CurrentDate.ToString("MMMM YYYY").Titlecase
+		  Var planName As String = ""
+		  If App.MealsManager.CurrentMealPlan <> Nil Then
+		    planName = " · " + App.MealsManager.CurrentMealPlan.Name
+		  End If
+		  Self.Title = CurrentDate.ToString("MMMM YYYY").Titlecase + planName
 		  App.MealsManager.LoadPlansForMonth(CurrentDate.Year, CurrentDate.Month)
-		  
+
 		  DayPlanTable.Plan = App.MealsManager.GetPlanForDate(Calendar.SelectedDate)
 		  DayPlanTable.Reload
+		End Sub
+	#tag EndMethod
+
+	#tag Method, Flags = &h21
+		Private Sub PlansChangedHandler(sender As MealPlansScreen)
+		  LoadPlans
+		  Calendar.Reload
 		End Sub
 	#tag EndMethod
 

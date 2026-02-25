@@ -17,6 +17,10 @@ Protected Class DailyPlan
 	#tag EndProperty
 
 	#tag Property, Flags = &h0
+		MealPlanID As Integer
+	#tag EndProperty
+
+	#tag Property, Flags = &h0
 		Lunch() As Meal
 	#tag EndProperty
 
